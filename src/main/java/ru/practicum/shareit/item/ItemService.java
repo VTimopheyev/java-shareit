@@ -2,6 +2,7 @@ package ru.practicum.shareit.item;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.user.UserNotFoundException;
@@ -106,8 +107,8 @@ public class ItemService {
         return true;
     }
 
-    private boolean checkItemOwnedByUser(Optional<Long> userId, long itemId) {
-        return userId.get() == itemStorage.checkOwner(itemId);
+    private boolean checkItemOwnedByUser(@NotNull Optional<Long> userId, Long itemId) {
+        return userId.get().equals(itemStorage.checkOwner(itemId));
     }
 
 }
