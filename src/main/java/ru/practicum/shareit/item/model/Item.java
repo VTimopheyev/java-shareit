@@ -1,7 +1,8 @@
 package ru.practicum.shareit.item.model;
 
 import lombok.Data;
-import ru.practicum.shareit.user.User;
+import ru.practicum.shareit.request.ItemRequest;
+import ru.practicum.shareit.user.model.User;
 
 @Data
 public class Item {
@@ -11,6 +12,7 @@ public class Item {
     private String description;
     private boolean available;
     private User owner;
+    private ItemRequest request;
 
     public Item(String name, String description, boolean available) {
         this.name = name;

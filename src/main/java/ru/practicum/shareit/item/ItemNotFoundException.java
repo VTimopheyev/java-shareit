@@ -6,8 +6,9 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 @ResponseStatus(HttpStatus.NOT_FOUND)
 public class ItemNotFoundException extends RuntimeException {
 
-    public ItemNotFoundException(final String message) {
-        super(message);
+    public ItemNotFoundException() {
+
+        super ("There is no requested item among items created by the User or User not signed in");
     }
 
 }

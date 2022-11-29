@@ -1,6 +1,7 @@
 package ru.practicum.shareit.user;
 
 import org.springframework.stereotype.Component;
+import ru.practicum.shareit.user.model.User;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -26,7 +27,7 @@ public class UserStorageInMemoryImpl implements UserStorage {
     @Override
     public User update(long id, User user) {
         User updatedUser = getUser(id);
-        if (user.getEmail() != null && !checkEmailExists(user.getEmail())) {
+        if (user.getEmail() != null) {
             updatedUser.setEmail(user.getEmail());
         }
 
@@ -55,27 +56,5 @@ public class UserStorageInMemoryImpl implements UserStorage {
             allUsers.add(users.get(id));
         }
         return allUsers;
-    }
-
-    @Override
-    public boolean checkEmailExists(String email) {
-        for (User u : users.values()) {
-            if (u.getEmail().equals(email)) {
-                throw new UserEmailInvalidException("Email is already registered");
-            }
-        }
-        return false;
-    }
-
-    @Override
-    public boolean checkUserExists(long userId) {
-        if (!users.isEmpty()) {
-            for (Long id : users.keySet()) {
-                if (id == userId) {
-                    return true;
-                }
-            }
-        }
-        return false;
     }
 }

@@ -5,8 +5,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.user.User;
-import ru.practicum.shareit.user.UserStorage;
 
 
 import java.util.ArrayList;
@@ -20,32 +18,24 @@ public class ItemStorageInMemoryImpl implements ItemStorage {
 
     private long idCount = 1;
     private Map<Long, Item> items = new HashMap<>();
-    private final ItemMapper itemMapper;
-    private final UserStorage userStorage;
+
 
     @Override
-    public ItemDto addNewItem(ItemDto itemDTO, long userId) {
-        Item item = itemMapper.toItem(itemDTO);
+    public Long addNewItem(Item item) {
         item.setId(idCount);
         idCount++;
-        item.setOwner(userStorage.getUser(userId));
         items.put(item.getId(), item);
 
-        return getItem(item.getId());
+        return getItem(item.getId()).getId();
     }
 
     @Override
-    public ItemDto getItem(long itemId) {
-        return itemMapper.toItemDto(items.get(itemId));
+    public Item getItem(long itemId) {
+        return items.get(itemId);
     }
 
     @Override
-    public Long checkOwner(long itemId) {
-        return items.get(itemId).getOwner().getId();
-    }
-
-    @Override
-    public ItemDto updateItem(long userId, long itemId, ItemDto itemDTO) {
+    public Item updateItem(long userId, long itemId, ItemDto itemDTO) {
         Item updatedItem = items.get(itemId);
 
         if (itemDTO.getAvailable() != null) {
@@ -61,7 +51,7 @@ public class ItemStorageInMemoryImpl implements ItemStorage {
 
         items.put(itemId, updatedItem);
 
-        return itemMapper.toItemDto(items.get(itemId));
+        return updatedItem;
     }
 
     @Override
@@ -71,29 +61,24 @@ public class ItemStorageInMemoryImpl implements ItemStorage {
 
 
     @Override
-    public List<ItemDto> getItems(Long userId) {
-        List<ItemDto> list = new ArrayList<>();
+    public List<Item> getItems(Long userId) {
+        List<Item> list = new ArrayList<>();
         for (long id : items.keySet()) {
             if (items.get(id).getOwner().getId() == userId) {
-                list.add(itemMapper.toItemDto(items.get(id)));
+                list.add(items.get(id));
             }
         }
         return list;
     }
 
     @Override
-    public User getOwner(long itemId) {
-        return items.get(itemId).getOwner();
-    }
-
-    @Override
-    public List<ItemDto> searchItems(String text) {
-        List<ItemDto> searchedItems = new ArrayList<>();
+    public List<Item> searchItems(String text) {
+        List<Item> searchedItems = new ArrayList<>();
         for (Item item : items.values()) {
             if ((StringUtils.containsIgnoreCase(item.getName(), text) ||
                     StringUtils.containsIgnoreCase(item.getDescription(), text)) &&
                     item.isAvailable()) {
-                searchedItems.add(itemMapper.toItemDto(item));
+                searchedItems.add(item);
             }
         }
         return searchedItems;

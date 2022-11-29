@@ -6,8 +6,9 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 
 @ResponseStatus(HttpStatus.CONFLICT)
 public class UserEmailInvalidException extends RuntimeException {
-    public UserEmailInvalidException(final String message) {
-        super(message);
+    public UserEmailInvalidException() {
+
+        super("User with provided email already registered");
     }
 }
 
