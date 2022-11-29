@@ -34,9 +34,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<UserDto> getAll() {
-        List <User> allUsers = userStorage.getAll();
-        List <UserDto> allUsersDto = new ArrayList<>();
-        for (User u : allUsers){
+        List<User> allUsers = userStorage.getAll();
+        List<UserDto> allUsersDto = new ArrayList<>();
+        for (User u : allUsers) {
             allUsersDto.add(userMapper.toUserDto(u));
         }
 
