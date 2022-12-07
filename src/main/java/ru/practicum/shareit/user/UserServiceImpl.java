@@ -2,7 +2,6 @@ package ru.practicum.shareit.user;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.model.User;
@@ -15,8 +14,7 @@ import java.util.List;
 @Slf4j
 public class UserServiceImpl implements UserService {
 
-    @Qualifier("UserStorageInMemoryImpl")
-    private final UserStorage userStorage;
+    private final UserRepository userRepository;
     private final UserMapper userMapper;
 
     @Override
@@ -29,12 +27,12 @@ public class UserServiceImpl implements UserService {
             throw new UserValidationException();
         }
 
-        return userMapper.toUserDto(userStorage.create(user));
+        return userMapper.toUserDto(userRepository.save(user));
     }
 
     @Override
     public List<UserDto> getAll() {
-        List<User> allUsers = userStorage.getAll();
+        List<User> allUsers = userRepository.findAll();
         List<UserDto> allUsersDto = new ArrayList<>();
         for (User u : allUsers) {
             allUsersDto.add(userMapper.toUserDto(u));
@@ -49,12 +47,12 @@ public class UserServiceImpl implements UserService {
         if (!checkUserExists(id) || checkEmailExists(user.getEmail())) {
             throw new UserNotFoundException();
         }
-        return userMapper.toUserDto(userStorage.update(id, user));
+        return userMapper.toUserDto(userRepository.save(user));
     }
 
     @Override
     public UserDto getUser(long id) {
-        return userMapper.toUserDto(userStorage.getUser(id));
+        return userMapper.toUserDto(userRepository.getById(id));
     }
 
     @Override
@@ -62,7 +60,7 @@ public class UserServiceImpl implements UserService {
         if (!checkUserExists(userId)) {
             throw new UserNotFoundException();
         }
-        userStorage.deleteUser(userId);
+        userRepository.deleteById(userId);
     }
 
     @Override
@@ -79,7 +77,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public boolean checkEmailExists(String email) {
-        List<User> users = userStorage.getAll();
+        List<User> users = userRepository.findAll();
         for (User u : users) {
             if (u.getEmail().equals(email)) {
                 throw new UserEmailInvalidException();
@@ -90,7 +88,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public boolean checkUserExists(long userId) {
-        List<User> users = userStorage.getAll();
+        List<User> users = userRepository.findAll();
         if (!users.isEmpty()) {
             for (User u : users) {
                 if (u.getId() == userId) {
@@ -103,6 +101,6 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User getOwner(Long id) {
-        return userStorage.getUser(id);
+        return userRepository.getById(id);
     }
 }
