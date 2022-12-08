@@ -1,6 +1,7 @@
 package ru.practicum.shareit.item.model;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import org.springframework.lang.Nullable;
 import ru.practicum.shareit.request.ItemRequest;
@@ -10,12 +11,13 @@ import javax.persistence.*;
 
 @Data
 @Entity
-@Table(name = "users")
+@Table(name = "items")
 @NoArgsConstructor
+@EqualsAndHashCode
 public class Item {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue (strategy = GenerationType.IDENTITY)
     private long id;
     private String name;
     private String description;
@@ -24,8 +26,9 @@ public class Item {
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User owner;
-    @Nullable
-    private ItemRequest request;
+
+    //@Nullable
+    //private ItemRequest request;
 
     public Item(String name, String description, boolean available) {
         this.name = name;

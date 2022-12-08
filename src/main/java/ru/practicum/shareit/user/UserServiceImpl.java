@@ -21,7 +21,6 @@ public class UserServiceImpl implements UserService {
     public UserDto create(UserDto userDto) {
 
         User user = userMapper.toUser(userDto);
-        checkEmailExists(user.getEmail());
 
         if (!validateUser(user)) {
             throw new UserValidationException();
@@ -42,17 +41,31 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDto update(long id, UserDto userDto) {
-        User user = userMapper.toUser(userDto);
-        if (!checkUserExists(id) || checkEmailExists(user.getEmail())) {
+    public UserDto update(Long id, UserDto userDto) {
+
+        if (!checkUserExists(id) || checkEmailExists(userDto.getEmail())) {
             throw new UserNotFoundException();
         }
+        User user = userRepository.getOne(id);
+
+        if (userDto.getEmail() != null) {
+            user.setEmail(userDto.getEmail());
+        }
+        if (userDto.getName() != null) {
+            user.setName(userDto.getName());
+        }
+
+
         return userMapper.toUserDto(userRepository.save(user));
     }
 
     @Override
     public UserDto getUser(long id) {
-        return userMapper.toUserDto(userRepository.getById(id));
+        if (userRepository.existsById(id)){
+            return userMapper.toUserDto(userRepository.getById(id));
+        }else{
+            throw new UserNotFoundException();
+        }
     }
 
     @Override
