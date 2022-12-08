@@ -125,6 +125,10 @@ public class ItemServiceImpl implements ItemService {
         return searchedItemsDto;
     }
 
+    public Item getItemById(Long id){
+        return itemRepository.getById(id);
+    }
+
     private boolean validateItemDTO(ItemDto itemDTO) {
         if (itemDTO.getName() == null || itemDTO.getName().isEmpty()) {
             throw new ItemValidationException();

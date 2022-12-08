@@ -10,5 +10,6 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
 
     List<Item> findByOwnerEquals(User user);
 
-    List<Item> findByNameContainingOrDescriptionContainingIgnoreCaseAndAvailableEquals (String text, String text2, boolean available);
+    List<Item> findByNameContainingOrDescriptionContainingIgnoreCaseAndAvailableEquals
+            (String text, String text2, boolean available);
 }
