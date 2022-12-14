@@ -17,15 +17,17 @@ public class BookingMapper {
         return new Booking(
                 bookingDto.getStart(),
                 bookingDto.getEnd(),
-                itemService.getItemById(bookingDto.getItemId())
+                itemService.getItemById(bookingDto.getItemId()).get()
         );
     }
 
     public BookingDto toBookingDto(Booking booking) {
         return new BookingDto(
+                booking.getId(),
                 booking.getItem().getId(),
                 booking.getStart(),
-                booking.getEnd()
+                booking.getEnd(),
+                booking.getBooker().getId()
         );
     }
 

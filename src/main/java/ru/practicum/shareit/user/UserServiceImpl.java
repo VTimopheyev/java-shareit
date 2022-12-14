@@ -46,7 +46,7 @@ public class UserServiceImpl implements UserService {
         if (!checkUserExists(id) || checkEmailExists(userDto.getEmail())) {
             throw new UserNotFoundException();
         }
-        User user = userRepository.getOne(id);
+        User user = userRepository.findById(id).get();
 
         if (userDto.getEmail() != null) {
             user.setEmail(userDto.getEmail());
@@ -62,7 +62,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDto getUser(long id) {
         if (userRepository.existsById(id)){
-            return userMapper.toUserDto(userRepository.getById(id));
+            return userMapper.toUserDto(userRepository.findById(id).get());
         }else{
             throw new UserNotFoundException();
         }
@@ -114,6 +114,6 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User getOwner(Long id) {
-        return userRepository.getById(id);
+        return userRepository.findById(id).get();
     }
 }

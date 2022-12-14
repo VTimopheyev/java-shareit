@@ -11,7 +11,7 @@ CREATE TABLE IF NOT EXISTS items (
   name VARCHAR(255) NOT NULL,
   description VARCHAR(512) NOT NULL,
   available BOOLEAN NOT NULL,
-  user_id BIGINT NOT NULL,
+  owner_id BIGINT NOT NULL,
   CONSTRAINT pk_item PRIMARY KEY (id)
 );
 
@@ -20,6 +20,8 @@ CREATE TABLE IF NOT EXISTS bookings (
   start_date VARCHAR(255) NOT NULL,
   end_date VARCHAR(255) NOT NULL,
   item_id BIGINT NOT NULL,
-  user_id BIGINT NOT NULL,
+  booker_id BIGINT NOT NULL,
+  owner_id BIGINT NOT NULL,
+  status VARCHAR NOT NULL,
   CONSTRAINT pk_bookings PRIMARY KEY (id)
 );

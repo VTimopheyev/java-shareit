@@ -3,11 +3,15 @@ package ru.practicum.shareit.item;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import ru.practicum.shareit.booking.dto.BookingDto;
+import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.item.dto.OwnerItemDto;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.UserNotFoundException;
 import ru.practicum.shareit.user.UserService;
 import ru.practicum.shareit.user.UserValidationException;
+import ru.practicum.shareit.user.model.User;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,37 +44,27 @@ public class ItemServiceImpl implements ItemService {
         return null;
     }
 
-    public ItemDto getItem(Optional<Long> userId, long itemId) {
-        if (userId.isEmpty() || !userService.checkUserExists(userId.get())) {
-            throw new UserValidationException();
-        }
-
-        if (!itemRepository.existsById(itemId)) {
-            throw new ItemNotFoundException();
-        }
-
-        return itemMapper.toItemDto(itemRepository.getById(itemId));
+    public OwnerItemDto getItemForOwner(Item item, BookingDto lastBooking, BookingDto nextBooking) {
+        return itemMapper.toOwnerItemDto(item, lastBooking, nextBooking);
     }
 
-    public List<ItemDto> getItems(Optional<Long> userId) {
+    public ItemDto getItemForBooker(Item item) {
+        return itemMapper.toItemDto(item);
+    }
 
-        if (userId.isEmpty() || !userService.checkUserExists(userId.get())) {
-            throw new UserValidationException();
-        }
+    @Override
+    public OwnerItemDto convertToOwnerItemDto(Item i, BookingDto lastBooking, BookingDto nextBooking) {
+        return itemMapper.toOwnerItemDto(i, lastBooking, nextBooking);
+    }
 
-        List<Item> allItems = itemRepository.findByOwnerEquals(userService.getOwner(userId.get()));
-        List<ItemDto> allDtoItems = new ArrayList<>();
-
-        for (Item i : allItems) {
-            allDtoItems.add(itemMapper.toItemDto(i));
-        }
-
-        return allDtoItems;
+    @Override
+    public List<Item> getAllItems(User user) {
+        return itemRepository.findByOwnerEquals(user);
     }
 
     public ItemDto updateItem(Optional<Long> userId, long itemId, ItemDto itemDTO) {
         if (userId.isEmpty() || !userService.checkUserExists(userId.get()) ||
-                Optional.of(itemRepository.getById(itemId)).isEmpty()) {
+                Optional.of(itemRepository.findById(itemId)).isEmpty()) {
             throw new UserValidationException();
         }
 
@@ -78,7 +72,7 @@ public class ItemServiceImpl implements ItemService {
             throw new ItemNotFoundException();
         }
 
-        Item item = itemRepository.getById(itemId);
+        Item item = itemRepository.findById(itemId).get();
         if (itemDTO.getName() != null) {
             item.setName(itemDTO.getName());
         }
@@ -94,7 +88,7 @@ public class ItemServiceImpl implements ItemService {
 
     public void deleteItem(Optional<Long> userId, long itemId) {
         if (userId.isEmpty() || !userService.checkUserExists(userId.get()) ||
-                Optional.of(itemRepository.getById(itemId)).isEmpty()) {
+                Optional.of(itemRepository.findById(itemId)).isEmpty()) {
             throw new UserValidationException();
         }
 
@@ -125,8 +119,8 @@ public class ItemServiceImpl implements ItemService {
         return searchedItemsDto;
     }
 
-    public Item getItemById(Long id){
-        return itemRepository.getById(id);
+    public Optional<Item> getItemById(Long id) {
+        return itemRepository.findById(id);
     }
 
     private boolean validateItemDTO(ItemDto itemDTO) {
@@ -142,8 +136,13 @@ public class ItemServiceImpl implements ItemService {
         return true;
     }
 
+    @Override
+    public boolean checkItemExists(Long id) {
+        return itemRepository.existsById(id);
+    }
+
     private boolean checkItemOwnedByUser(Optional<Long> userId, Long itemId) {
-        return userId.get() == (itemRepository.getReferenceById(itemId).getOwner().getId());
+        return userId.get() == (itemRepository.findById(itemId).get().getOwner().getId());
     }
 }
 
