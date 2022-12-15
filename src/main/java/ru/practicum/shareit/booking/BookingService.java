@@ -27,4 +27,6 @@ public interface BookingService {
     Object getItem(Optional<Long> userId, long itemId);
 
     List<OwnerItemDto> getAllItems(Optional<Long> userId);
+
+    void checkUserBookedItem(long itemId, Optional<Long> userId);
 }

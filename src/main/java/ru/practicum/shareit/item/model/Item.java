@@ -2,12 +2,13 @@ package ru.practicum.shareit.item.model;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.lang.Nullable;
-import ru.practicum.shareit.request.ItemRequest;
+import ru.practicum.shareit.item.Comment;
 import ru.practicum.shareit.user.model.User;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Data
 @Entity
@@ -17,12 +18,11 @@ import javax.persistence.*;
 public class Item {
 
     @Id
-    @GeneratedValue (strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
     private String name;
     private String description;
     private boolean available;
-
     @ManyToOne
     @JoinColumn(name = "owner_id")
     private User owner;

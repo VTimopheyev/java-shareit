@@ -4,15 +4,18 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.dto.BookingDto;
-import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.OwnerItemDto;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.UserNotFoundException;
+import ru.practicum.shareit.user.UserRepository;
 import ru.practicum.shareit.user.UserService;
 import ru.practicum.shareit.user.UserValidationException;
 import ru.practicum.shareit.user.model.User;
 
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -21,9 +24,11 @@ import java.util.Optional;
 @RequiredArgsConstructor
 @Slf4j
 public class ItemServiceImpl implements ItemService {
+    private final UserRepository userRepository;
     private final UserService userService;
     private final ItemMapper itemMapper;
     private final ItemRepository itemRepository;
+    private final CommentsRepository commentsRepository;
 
 
     public ItemDto addNewItem(Optional<Long> userId, ItemDto itemDTO) {
@@ -38,23 +43,37 @@ public class ItemServiceImpl implements ItemService {
         if (validateItemDTO(itemDTO)) {
             Item item = itemMapper.toItem(itemDTO);
             item.setOwner(userService.getOwner(userId.get()));
+            itemRepository.save(item);
+            List<Comment> comments = commentsRepository.findByItemEquals(item);
 
-            return itemMapper.toItemDto(itemRepository.save(item));
+            return itemMapper.toItemDto(item, comments);
         }
         return null;
     }
 
     public OwnerItemDto getItemForOwner(Item item, BookingDto lastBooking, BookingDto nextBooking) {
-        return itemMapper.toOwnerItemDto(item, lastBooking, nextBooking);
+        List<Comment> comments = commentsRepository.findByItemEquals(item);
+        return itemMapper.toOwnerItemDto(item, lastBooking, nextBooking, comments);
     }
 
-    public ItemDto getItemForBooker(Item item) {
-        return itemMapper.toItemDto(item);
+    @Override
+    public Comment addNewComment(Optional<Long> userId, long itemId, Comment comment) {
+
+        if (comment.getText().isEmpty()) {
+            throw new CommentValidationException();
+        }
+
+        comment.setCreated(LocalDateTime.ofInstant(Instant.now(), ZoneId.systemDefault()));
+        comment.setAuthorName(userRepository.findById(userId.get()).get().getName());
+        comment.setItem(itemRepository.findById(itemId).get());
+
+        return commentsRepository.save(comment);
     }
 
     @Override
     public OwnerItemDto convertToOwnerItemDto(Item i, BookingDto lastBooking, BookingDto nextBooking) {
-        return itemMapper.toOwnerItemDto(i, lastBooking, nextBooking);
+        List<Comment> comments = commentsRepository.findByItemEquals(i);
+        return itemMapper.toOwnerItemDto(i, lastBooking, nextBooking, comments);
     }
 
     @Override
@@ -83,7 +102,8 @@ public class ItemServiceImpl implements ItemService {
             item.setDescription(itemDTO.getDescription());
         }
 
-        return itemMapper.toItemDto(itemRepository.save(item));
+        List<Comment> comments = commentsRepository.findByItemEquals(item);
+        return itemMapper.toItemDto(itemRepository.save(item), comments);
     }
 
     public void deleteItem(Optional<Long> userId, long itemId) {
@@ -113,7 +133,8 @@ public class ItemServiceImpl implements ItemService {
                         (text, text, true);
         List<ItemDto> searchedItemsDto = new ArrayList<>();
         for (Item i : searchedItems) {
-            searchedItemsDto.add(itemMapper.toItemDto(i));
+            List<Comment> comments = commentsRepository.findByItemEquals(i);
+            searchedItemsDto.add(itemMapper.toItemDto(i, comments));
         }
 
         return searchedItemsDto;

@@ -10,17 +10,20 @@ import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.OwnerItemDto;
 import ru.practicum.shareit.item.model.Item;
 
+import java.util.List;
+
 @Component
 @RequiredArgsConstructor
 @Slf4j
 public class ItemMapper {
 
-    public ItemDto toItemDto(Item item) {
+    public ItemDto toItemDto(Item item, List<Comment> comments) {
         return new ItemDto(
                 item.getId(),
                 item.getName(),
                 item.getDescription(),
-                item.isAvailable()
+                item.isAvailable(),
+                comments
         );
     }
 
@@ -32,14 +35,15 @@ public class ItemMapper {
         );
     }
 
-    public OwnerItemDto toOwnerItemDto(Item item, BookingDto lastBooking, BookingDto NextBooking) {
+    public OwnerItemDto toOwnerItemDto(Item item, BookingDto lastBooking, BookingDto NextBooking, List<Comment> comments) {
         return new OwnerItemDto(
                 item.getId(),
                 item.getName(),
                 item.getDescription(),
                 item.isAvailable(),
                 lastBooking,
-                NextBooking
+                NextBooking,
+                comments
         );
     }
 

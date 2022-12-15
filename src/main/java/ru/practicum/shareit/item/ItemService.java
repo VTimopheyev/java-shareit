@@ -1,7 +1,6 @@
 package ru.practicum.shareit.item;
 
 import ru.practicum.shareit.booking.dto.BookingDto;
-import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.OwnerItemDto;
 import ru.practicum.shareit.item.model.Item;
@@ -29,4 +28,5 @@ public interface ItemService {
     boolean checkItemExists(Long id);
 
     OwnerItemDto getItemForOwner(Item item, BookingDto lastBooking, BookingDto nextBooking);
+    Comment addNewComment(Optional<Long> userId, long itemId, Comment comment);
 }

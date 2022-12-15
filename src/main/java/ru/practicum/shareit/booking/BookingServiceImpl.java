@@ -2,7 +2,6 @@ package ru.practicum.shareit.booking;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.model.Booking;
@@ -11,6 +10,7 @@ import ru.practicum.shareit.item.ItemService;
 import ru.practicum.shareit.item.dto.OwnerItemDto;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.UserNotFoundException;
+import ru.practicum.shareit.user.UserRepository;
 import ru.practicum.shareit.user.UserService;
 import ru.practicum.shareit.user.UserValidationException;
 import ru.practicum.shareit.user.model.User;
@@ -28,6 +28,7 @@ import static ru.practicum.shareit.booking.BookingStatus.*;
 @RequiredArgsConstructor
 @Slf4j
 public class BookingServiceImpl implements BookingService {
+    private final UserRepository userRepository;
 
     private final BookingRepository bookingRepository;
     private final UserService userService;
@@ -131,21 +132,27 @@ public class BookingServiceImpl implements BookingService {
         }
 
         if (!checkStatusExists(status)) {
-            throw new BookingWrongStatusException();
+            throw new UnsupportedBookingStatusError(status);
         }
 
         BookingStatus state = valueOf(status);
-        LocalDateTime now = LocalDateTime.ofInstant(Instant.now(), ZoneId.systemDefault());
 
         switch (BookingStatus.valueOf(status)) {
             case ALL:
                 return bookingRepository.findByBookerEqualsOrderByStartDesc(userService.getOwner(userId.get()));
             case FUTURE:
                 return bookingRepository.findByBookerEqualsAndStartAfterOrderByStartDesc
-                        (userService.getOwner(userId.get()), now);
+                        (userService.getOwner(userId.get()),
+                                LocalDateTime.ofInstant(Instant.now(), ZoneId.systemDefault()));
             case PAST:
                 return bookingRepository.findByBookerEqualsAndEndBeforeOrderByStartDesc
-                        (userService.getOwner(userId.get()), now);
+                        (userService.getOwner(userId.get()),
+                                LocalDateTime.ofInstant(Instant.now(), ZoneId.systemDefault()));
+            case CURRENT:
+                return bookingRepository.findByBookerEqualsAndStartBeforeAndEndAfterOrderByStartDesc(
+                        userService.getOwner(userId.get()),
+                        LocalDateTime.ofInstant(Instant.now(), ZoneId.systemDefault()),
+                        LocalDateTime.ofInstant(Instant.now(), ZoneId.systemDefault()));
             default:
                 return bookingRepository.findByBookerEqualsAndStatusEqualsOrderByStartDesc
                         (userService.getOwner(userId.get()), state);
@@ -159,21 +166,26 @@ public class BookingServiceImpl implements BookingService {
         }
 
         if (!checkStatusExists(status)) {
-            throw new BookingWrongStatusException();
+            throw new UnsupportedBookingStatusError(status);
         }
 
         BookingStatus state = valueOf(status);
-        LocalDateTime now = LocalDateTime.ofInstant(Instant.now(), ZoneId.systemDefault());
 
         switch (BookingStatus.valueOf(status)) {
             case ALL:
                 return bookingRepository.findByOwnerEqualsOrderByStartDesc(userService.getOwner(userId.get()));
             case FUTURE:
                 return bookingRepository.findByOwnerEqualsAndStartAfterOrderByStartDesc
-                        (userService.getOwner(userId.get()), now);
+                        (userService.getOwner(userId.get()),
+                                LocalDateTime.ofInstant(Instant.now(), ZoneId.systemDefault()));
             case PAST:
                 return bookingRepository.findByOwnerEqualsAndEndBeforeOrderByStartDesc
-                        (userService.getOwner(userId.get()), now);
+                        (userService.getOwner(userId.get()),
+                                LocalDateTime.ofInstant(Instant.now(), ZoneId.systemDefault()));
+            case CURRENT:
+                return bookingRepository.findByOwnerEqualsAndStartBeforeAndEndAfterOrderByStartDesc(userService.getOwner(userId.get()),
+            LocalDateTime.ofInstant(Instant.now(), ZoneId.systemDefault()),
+                    LocalDateTime.ofInstant(Instant.now(), ZoneId.systemDefault()));
             default:
                 return bookingRepository.findByOwnerEqualsAndStatusEqualsOrderByStartDesc
                         (userService.getOwner(userId.get()), state);
@@ -181,24 +193,22 @@ public class BookingServiceImpl implements BookingService {
     }
 
     public BookingDto getLastBooking(Item item) {
-        LocalDateTime now = LocalDateTime.ofInstant(Instant.now(), ZoneId.systemDefault());
-        if (bookingRepository.findOneByItemEqualsAndEndBeforeOrderByEndDesc(item, now) == null) {
+        List<Booking> bookings = bookingRepository.findByItemEqualsAndStartBeforeAndStatusEqualsOrderByEndDesc(item,
+                LocalDateTime.ofInstant(Instant.now(), ZoneId.systemDefault()), APPROVED);
+        if (bookings.isEmpty()) {
             return null;
         } else {
-            //now = LocalDateTime.ofInstant(Instant.now(), ZoneId.systemDefault());
-            return bookingMapper.toBookingDto
-                    (bookingRepository.findOneByItemEqualsAndStartBeforeAndStatusEqualsOrderByEndDesc(item, now, APPROVED));
+            return bookingMapper.toBookingDto(bookings.get(0));
         }
     }
 
     public BookingDto getNextBooking(Item item) {
-        LocalDateTime now = LocalDateTime.ofInstant(Instant.now(), ZoneId.systemDefault());
-        if (bookingRepository.findOneByItemEqualsAndStartAfterOrderByStartDesc(item, now) == null) {
+        List<Booking> bookings = bookingRepository.findByItemEqualsAndStartAfterAndStatusEqualsOrderByStartDesc(item,
+                LocalDateTime.ofInstant(Instant.now(), ZoneId.systemDefault()), APPROVED);
+        if (bookings.isEmpty()) {
             return null;
         } else {
-            //now = LocalDateTime.ofInstant(Instant.now(), ZoneId.systemDefault());
-            return bookingMapper.toBookingDto
-                    (bookingRepository.findOneByItemEqualsAndStartAfterAndStatusEqualsOrderByStartDesc(item, now, APPROVED));
+            return bookingMapper.toBookingDto(bookings.get(0));
         }
     }
 
@@ -213,21 +223,19 @@ public class BookingServiceImpl implements BookingService {
         }
 
         Item item = itemService.getItemById(itemId).get();
-        User user = userService.getOwner(userId.get());
 
-        if (userId.get() == item.getOwner().getId()){
+        if (userId.get() == item.getOwner().getId()) {
             return itemService.getItemForOwner(item, getLastBooking(item), getNextBooking(item));
-        }
-        else if (checkItemBookedByUser(item, user)){
+        } else {
             return itemService.getItemForOwner(item, null, null);
         }
-        throw new ItemNotFoundException();
     }
+
     private boolean checkItemBookedByUser(Item item, User user) {
         return !(bookingRepository.findByItemEqualsAndBookerEquals(item, user).isEmpty());
     }
 
-    public List <OwnerItemDto> getAllItems(Optional<Long> userId){
+    public List<OwnerItemDto> getAllItems(Optional<Long> userId) {
         if (userId.isEmpty() || !userService.checkUserExists(userId.get())) {
             throw new UserValidationException();
         }
@@ -240,5 +248,20 @@ public class BookingServiceImpl implements BookingService {
         }
 
         return allOwnerDtoItems;
+    }
+
+    @Override
+    public void checkUserBookedItem(long itemId, Optional<Long> userId) {
+        if (userId.isEmpty() || !userService.checkUserExists(userId.get())) {
+            throw new UserValidationException();
+        }
+        Item item = itemService.getItemById(itemId).get();
+        User booker = userService.getOwner(userId.get());
+
+        List<Booking> bookings = bookingRepository.findByBookerEqualsAndItemEqualsAndStatusEqualsAndStartBefore
+                (booker, item, APPROVED, LocalDateTime.ofInstant(Instant.now(), ZoneId.systemDefault()));
+        if (bookings.isEmpty()){
+            throw new CommentsCreationIsNotAvailable();
+        }
     }
 }
