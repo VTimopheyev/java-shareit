@@ -28,5 +28,6 @@ public interface ItemService {
     boolean checkItemExists(Long id);
 
     OwnerItemDto getItemForOwner(Item item, BookingDto lastBooking, BookingDto nextBooking);
+
     Comment addNewComment(Optional<Long> userId, long itemId, Comment comment);
 }

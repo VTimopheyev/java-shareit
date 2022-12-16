@@ -10,7 +10,6 @@ import ru.practicum.shareit.item.ItemService;
 import ru.practicum.shareit.item.dto.OwnerItemDto;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.UserNotFoundException;
-import ru.practicum.shareit.user.UserRepository;
 import ru.practicum.shareit.user.UserService;
 import ru.practicum.shareit.user.UserValidationException;
 import ru.practicum.shareit.user.model.User;
@@ -28,8 +27,6 @@ import static ru.practicum.shareit.booking.BookingStatus.*;
 @RequiredArgsConstructor
 @Slf4j
 public class BookingServiceImpl implements BookingService {
-    private final UserRepository userRepository;
-
     private final BookingRepository bookingRepository;
     private final UserService userService;
     private final ItemService itemService;
@@ -184,8 +181,8 @@ public class BookingServiceImpl implements BookingService {
                                 LocalDateTime.ofInstant(Instant.now(), ZoneId.systemDefault()));
             case CURRENT:
                 return bookingRepository.findByOwnerEqualsAndStartBeforeAndEndAfterOrderByStartDesc(userService.getOwner(userId.get()),
-            LocalDateTime.ofInstant(Instant.now(), ZoneId.systemDefault()),
-                    LocalDateTime.ofInstant(Instant.now(), ZoneId.systemDefault()));
+                        LocalDateTime.ofInstant(Instant.now(), ZoneId.systemDefault()),
+                        LocalDateTime.ofInstant(Instant.now(), ZoneId.systemDefault()));
             default:
                 return bookingRepository.findByOwnerEqualsAndStatusEqualsOrderByStartDesc
                         (userService.getOwner(userId.get()), state);
@@ -231,10 +228,6 @@ public class BookingServiceImpl implements BookingService {
         }
     }
 
-    private boolean checkItemBookedByUser(Item item, User user) {
-        return !(bookingRepository.findByItemEqualsAndBookerEquals(item, user).isEmpty());
-    }
-
     public List<OwnerItemDto> getAllItems(Optional<Long> userId) {
         if (userId.isEmpty() || !userService.checkUserExists(userId.get())) {
             throw new UserValidationException();
@@ -260,7 +253,7 @@ public class BookingServiceImpl implements BookingService {
 
         List<Booking> bookings = bookingRepository.findByBookerEqualsAndItemEqualsAndStatusEqualsAndStartBefore
                 (booker, item, APPROVED, LocalDateTime.ofInstant(Instant.now(), ZoneId.systemDefault()));
-        if (bookings.isEmpty()){
+        if (bookings.isEmpty()) {
             throw new CommentsCreationIsNotAvailable();
         }
     }

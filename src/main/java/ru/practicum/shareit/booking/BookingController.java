@@ -26,7 +26,6 @@ public class BookingController {
     public Booking setApprovalStatus(@RequestHeader("X-Sharer-User-Id") Optional<Long> userId,
                                      @PathVariable long bookingId,
                                      @RequestParam Boolean approved) {
-        System.out.println(approved);
         return bookingService.setApprovalStatus(userId, bookingId, approved);
     }
 
@@ -46,15 +45,5 @@ public class BookingController {
     public List<Booking> getBookingsOfItemsOfUser(@RequestHeader("X-Sharer-User-Id") Optional<Long> ownerId,
                                               @RequestParam(defaultValue = "ALL") String state) {
         return bookingService.getBookedItemsOfUser(ownerId, state);
-    }
-
-    @GetMapping("/items/{itemId}")
-    public Object getItem(@RequestHeader("X-Sharer-User-Id") Optional<Long> userId, @PathVariable long itemId) {
-        return bookingService.getItem(userId, itemId);
-    }
-
-    @GetMapping("/items")
-    public List<OwnerItemDto> getItems(@RequestHeader("X-Sharer-User-Id") Optional<Long> userId) {
-        return bookingService.getAllItems(userId);
     }
 }

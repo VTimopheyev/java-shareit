@@ -9,13 +9,13 @@ import javax.persistence.*;
 
 @Data
 @Entity
-@Table(name = "users")
+@Table(uniqueConstraints = @UniqueConstraint(columnNames = {"email"}), name = "users")
 @NoArgsConstructor
 @EqualsAndHashCode
 public class User {
 
     @Id
-    @GeneratedValue (strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
     private String name;
     private String email;

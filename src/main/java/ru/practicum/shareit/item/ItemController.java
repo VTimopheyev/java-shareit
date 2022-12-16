@@ -41,10 +41,20 @@ public class ItemController {
     }
 
     @PostMapping("/{itemId}/comment")
-    public Comment addComment (@RequestHeader("X-Sharer-User-Id") Optional<Long> userId,
-                               @PathVariable long itemId,
-                               @RequestBody Comment comment){
+    public Comment addComment(@RequestHeader("X-Sharer-User-Id") Optional<Long> userId,
+                              @PathVariable long itemId,
+                              @RequestBody Comment comment) {
         bookingService.checkUserBookedItem(itemId, userId);
         return itemService.addNewComment(userId, itemId, comment);
+    }
+
+    @GetMapping("/{itemId}")
+    public Object getItem(@RequestHeader("X-Sharer-User-Id") Optional<Long> userId, @PathVariable long itemId) {
+        return bookingService.getItem(userId, itemId);
+    }
+
+    @GetMapping
+    public List<OwnerItemDto> getItems(@RequestHeader("X-Sharer-User-Id") Optional<Long> userId) {
+        return bookingService.getAllItems(userId);
     }
 }

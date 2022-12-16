@@ -6,10 +6,8 @@ import lombok.ToString;
 @ToString
 @Getter
 public class ErrorResponse {
-
     private String error;
-
-    public ErrorResponse (String error){
+    public ErrorResponse(String error) {
         this.error = error;
     }
 

@@ -2,13 +2,10 @@ package ru.practicum.shareit.item.model;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
-import ru.practicum.shareit.item.Comment;
 import ru.practicum.shareit.user.model.User;
 
 import javax.persistence.*;
-import java.util.List;
 
 @Data
 @Entity

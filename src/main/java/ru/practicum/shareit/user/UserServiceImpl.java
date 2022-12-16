@@ -61,9 +61,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDto getUser(long id) {
-        if (userRepository.existsById(id)){
+        if (userRepository.existsById(id)) {
             return userMapper.toUserDto(userRepository.findById(id).get());
-        }else{
+        } else {
             throw new UserNotFoundException();
         }
     }
