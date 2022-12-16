@@ -33,15 +33,14 @@ public class ItemMapper {
         );
     }
 
-    public OwnerItemDto toOwnerItemDto
-            (Item item, BookingDto lastBooking, BookingDto NextBooking, List<Comment> comments) {
+    public OwnerItemDto toOwnerItemDto(Item item, BookingDto lastBooking, BookingDto nextBooking, List<Comment> comments) {
         return new OwnerItemDto(
                 item.getId(),
                 item.getName(),
                 item.getDescription(),
                 item.isAvailable(),
                 lastBooking,
-                NextBooking,
+                nextBooking,
                 comments
         );
     }

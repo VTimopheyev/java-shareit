@@ -129,8 +129,7 @@ public class ItemServiceImpl implements ItemService {
         }
 
         List<Item> searchedItems =
-                itemRepository.findByNameContainingOrDescriptionContainingIgnoreCaseAndAvailableEquals
-                        (text, text, true);
+                itemRepository.findByNameContainingOrDescriptionContainingIgnoreCaseAndAvailableEquals(text, text, true);
         List<ItemDto> searchedItemsDto = new ArrayList<>();
         for (Item i : searchedItems) {
             List<Comment> comments = commentsRepository.findByItemEquals(i);

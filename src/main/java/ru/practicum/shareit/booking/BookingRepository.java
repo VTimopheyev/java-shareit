@@ -27,20 +27,18 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
 
     List<Booking> findByOwnerEqualsAndStatusEqualsOrderByStartDesc(User owner, BookingStatus state);
 
-    List<Booking> findByItemEqualsAndBookerEquals(Item item, User user);
+    List<Booking> findByItemEqualsAndStartBeforeAndStatusEqualsOrderByEndDesc(
+            Item item, LocalDateTime now, BookingStatus approved);
 
-    List<Booking> findByItemEqualsAndStartBeforeAndStatusEqualsOrderByEndDesc
-            (Item item, LocalDateTime now, BookingStatus approved);
+    List<Booking> findByItemEqualsAndStartAfterAndStatusEqualsOrderByStartDesc(
+            Item item, LocalDateTime now, BookingStatus approved);
 
-    List<Booking> findByItemEqualsAndStartAfterAndStatusEqualsOrderByStartDesc
-            (Item item, LocalDateTime now, BookingStatus approved);
+    List<Booking> findByBookerEqualsAndItemEqualsAndStatusEqualsAndStartBefore(
+            User booker, Item item, BookingStatus approved, LocalDateTime now);
 
-    List<Booking> findByBookerEqualsAndItemEqualsAndStatusEqualsAndStartBefore
-            (User booker, Item item, BookingStatus approved, LocalDateTime now);
+    List<Booking> findByOwnerEqualsAndStartBeforeAndEndAfterOrderByStartDesc(
+            User owner, LocalDateTime now1, LocalDateTime now2);
 
-    List<Booking> findByOwnerEqualsAndStartBeforeAndEndAfterOrderByStartDesc
-            (User owner, LocalDateTime now1, LocalDateTime now2);
-
-    List<Booking> findByBookerEqualsAndStartBeforeAndEndAfterOrderByStartDesc
-            (User booker, LocalDateTime ofInstant, LocalDateTime now);
+    List<Booking> findByBookerEqualsAndStartBeforeAndEndAfterOrderByStartDesc(
+            User booker, LocalDateTime ofInstant, LocalDateTime now);
 }
