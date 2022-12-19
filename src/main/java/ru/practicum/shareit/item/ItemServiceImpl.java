@@ -19,6 +19,7 @@ import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -128,15 +129,14 @@ public class ItemServiceImpl implements ItemService {
             return new ArrayList<>();
         }
 
-        List<Item> searchedItems =
-                itemRepository.findByNameContainingOrDescriptionContainingIgnoreCaseAndAvailableEquals(text, text, true);
-        List<ItemDto> searchedItemsDto = new ArrayList<>();
-        for (Item i : searchedItems) {
-            List<Comment> comments = commentsRepository.findByItemEquals(i);
-            searchedItemsDto.add(itemMapper.toItemDto(i, comments));
-        }
-
-        return searchedItemsDto;
+        return itemRepository.findByNameContainingOrDescriptionContainingIgnoreCase(
+                        text, text).
+                stream().
+                filter(item -> item.isAvailable()).
+                map(item -> {
+                    return itemMapper.toItemDto(item, commentsRepository.findByItemEquals(item));
+                }).
+                collect(Collectors.toList());
     }
 
     public Optional<Item> getItemById(Long id) {

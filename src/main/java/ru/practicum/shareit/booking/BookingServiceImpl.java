@@ -74,24 +74,26 @@ public class BookingServiceImpl implements BookingService {
             throw new UserValidationException();
         }
 
-        if (!(userId.get() == bookingRepository.findOneById(bookingId).getItem().getOwner().getId())) {
-            throw new BookingNotFoundException();
-        }
-
         if (bookingRepository.findOneById(bookingId).getStatus().equals(APPROVED)) {
             throw new BookingAlreadyApprovedException();
         }
 
-        if (bookingRepository.existsById(bookingId)) {
-            Booking booking = bookingRepository.findById(bookingId).get();
-            if (status) {
-                booking.setStatus(APPROVED);
-            } else {
-                booking.setStatus(REJECTED);
-            }
-            return bookingRepository.save(booking);
+        if (status) {
+            return bookingRepository.findById(bookingId).
+                    filter(booking -> booking.getItem().getOwner().getId() == userId.get()).
+                    map(booking -> {
+                        booking.setStatus(APPROVED);
+                        return bookingRepository.save(booking);
+                    }).
+                    orElseThrow(BookingNotFoundException::new);
         } else {
-            throw new BookingNotFoundException();
+            return bookingRepository.findById(bookingId).
+                    filter(booking -> booking.getItem().getOwner().getId() == userId.get()).
+                    map(booking -> {
+                        booking.setStatus(REJECTED);
+                        return bookingRepository.save(booking);
+                    }).
+                    orElseThrow(BookingNotFoundException::new);
         }
     }
 
@@ -101,14 +103,10 @@ public class BookingServiceImpl implements BookingService {
             throw new UserValidationException();
         }
 
-        if (bookingRepository.existsById(bookingId) &&
-                (bookingRepository.findOneById(bookingId).getBooker().getId() == userId.get() ||
-                        bookingRepository.findOneById(bookingId).getItem().getOwner().getId() == userId.get()
-                )) {
-            return bookingRepository.findOneById(bookingId);
-        } else {
-            throw new BookingNotFoundException();
-        }
+        return bookingRepository.findById(bookingId).
+                filter(booking -> booking.getItem().getOwner().getId() == userId.get() ||
+                        booking.getBooker().getId() == userId.get()).
+                orElseThrow(BookingNotFoundException::new);
     }
 
     private boolean checkStatusExists(String status) {
