@@ -129,14 +129,14 @@ public class ItemServiceImpl implements ItemService {
             return new ArrayList<>();
         }
 
-        return itemRepository.findByNameContainingOrDescriptionContainingIgnoreCase(
-                        text, text).
-                stream().
-                filter(item -> item.isAvailable()).
-                map(item -> {
+        return itemRepository
+                .findByNameContainingOrDescriptionContainingIgnoreCase(text, text)
+                .stream()
+                .filter(item -> item.isAvailable())
+                .map(item -> {
                     return itemMapper.toItemDto(item, commentsRepository.findByItemEquals(item));
-                }).
-                collect(Collectors.toList());
+                })
+                .collect(Collectors.toList());
     }
 
     public Optional<Item> getItemById(Long id) {

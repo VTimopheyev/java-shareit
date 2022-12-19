@@ -79,21 +79,23 @@ public class BookingServiceImpl implements BookingService {
         }
 
         if (status) {
-            return bookingRepository.findById(bookingId).
-                    filter(booking -> booking.getItem().getOwner().getId() == userId.get()).
-                    map(booking -> {
+            return bookingRepository
+                    .findById(bookingId)
+                    .filter(booking -> booking.getItem().getOwner().getId() == userId.get())
+                    .map(booking -> {
                         booking.setStatus(APPROVED);
                         return bookingRepository.save(booking);
-                    }).
-                    orElseThrow(BookingNotFoundException::new);
+                    })
+                    .orElseThrow(BookingNotFoundException::new);
         } else {
-            return bookingRepository.findById(bookingId).
-                    filter(booking -> booking.getItem().getOwner().getId() == userId.get()).
-                    map(booking -> {
+            return bookingRepository
+                    .findById(bookingId)
+                    .filter(booking -> booking.getItem().getOwner().getId() == userId.get())
+                    .map(booking -> {
                         booking.setStatus(REJECTED);
                         return bookingRepository.save(booking);
-                    }).
-                    orElseThrow(BookingNotFoundException::new);
+                    })
+                    .orElseThrow(BookingNotFoundException::new);
         }
     }
 
@@ -103,10 +105,11 @@ public class BookingServiceImpl implements BookingService {
             throw new UserValidationException();
         }
 
-        return bookingRepository.findById(bookingId).
-                filter(booking -> booking.getItem().getOwner().getId() == userId.get() ||
-                        booking.getBooker().getId() == userId.get()).
-                orElseThrow(BookingNotFoundException::new);
+        return bookingRepository
+                .findById(bookingId)
+                .filter(booking -> booking.getItem().getOwner().getId() == userId.get() ||
+                        booking.getBooker().getId() == userId.get())
+                .orElseThrow(BookingNotFoundException::new);
     }
 
     private boolean checkStatusExists(String status) {
