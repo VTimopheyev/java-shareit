@@ -61,9 +61,10 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDto getUser(long id) {
-        return userRepository.findById(id).
-                map(userMapper::toUserDto).
-                orElseThrow(UserNotFoundException::new);
+        return userRepository
+                .findById(id)
+                .map(userMapper::toUserDto)
+                .orElseThrow(UserNotFoundException::new);
     }
 
     @Override
