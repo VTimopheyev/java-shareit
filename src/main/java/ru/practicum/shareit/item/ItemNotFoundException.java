@@ -10,5 +10,4 @@ public class ItemNotFoundException extends RuntimeException {
 
         super("There is no requested item among items created by the User or User not signed in");
     }
-
 }

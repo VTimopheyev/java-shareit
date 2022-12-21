@@ -4,6 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.lang.Nullable;
+import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.item.Comment;
 
 import java.util.List;
@@ -12,11 +14,15 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ItemDto {
+public class OwnerItemDto {
 
     private long id;
     private String name;
     private String description;
     private Boolean available;
+    @Nullable
+    BookingDto lastBooking;
+    @Nullable
+    BookingDto nextBooking;
     private List<Comment> comments;
 }

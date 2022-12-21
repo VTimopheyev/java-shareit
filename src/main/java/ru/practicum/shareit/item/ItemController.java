@@ -2,7 +2,9 @@ package ru.practicum.shareit.item;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.shareit.booking.BookingService;
 import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.item.dto.OwnerItemDto;
 
 import java.util.List;
 import java.util.Optional;
@@ -12,16 +14,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class ItemController {
     private final ItemService itemService;
-
-    @GetMapping
-    public List<ItemDto> getItems(@RequestHeader("X-Sharer-User-Id") Optional<Long> userId) {
-        return itemService.getItems(userId);
-    }
-
-    @GetMapping("/{itemId}")
-    public ItemDto getItem(@RequestHeader("X-Sharer-User-Id") Optional<Long> userId, @PathVariable long itemId) {
-        return itemService.getItem(userId, itemId);
-    }
+    private final BookingService bookingService;
 
     @PostMapping
     public ItemDto add(@RequestHeader("X-Sharer-User-Id") Optional<Long> userId,
@@ -45,5 +38,23 @@ public class ItemController {
     public List<ItemDto> searchItems(@RequestHeader("X-Sharer-User-Id") Optional<Long> userId,
                                      @RequestParam String text) {
         return itemService.searchItems(userId, text);
+    }
+
+    @PostMapping("/{itemId}/comment")
+    public Comment addComment(@RequestHeader("X-Sharer-User-Id") Optional<Long> userId,
+                              @PathVariable long itemId,
+                              @RequestBody Comment comment) {
+        bookingService.checkUserBookedItem(itemId, userId);
+        return itemService.addNewComment(userId, itemId, comment);
+    }
+
+    @GetMapping("/{itemId}")
+    public Object getItem(@RequestHeader("X-Sharer-User-Id") Optional<Long> userId, @PathVariable long itemId) {
+        return bookingService.getItem(userId, itemId);
+    }
+
+    @GetMapping
+    public List<OwnerItemDto> getItems(@RequestHeader("X-Sharer-User-Id") Optional<Long> userId) {
+        return bookingService.getAllItems(userId);
     }
 }

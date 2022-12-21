@@ -7,7 +7,6 @@ import java.util.List;
 
 public interface ItemStorage {
 
-
     List<Item> getItems(Long aLong);
 
     Long addNewItem(Item item);
