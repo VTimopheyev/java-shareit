@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.lang.Nullable;
 import ru.practicum.shareit.item.Comment;
 
 import java.util.List;
@@ -19,4 +20,7 @@ public class ItemDto {
     private String description;
     private Boolean available;
     private List<Comment> comments;
+
+    @Nullable
+    private Long requestId;
 }

@@ -16,9 +16,9 @@ public interface BookingService {
 
     Booking getBooking(Optional<Long> userId, long bookingId);
 
-    List<Booking> getBookingsOfUser(Optional<Long> userId, String status);
+    List<Booking> getBookingsOfUser(Optional<Long> userId, String status, Integer from, Integer size);
 
-    List<Booking> getBookedItemsOfUser(Optional<Long> userId, String status);
+    List<Booking> getBookedItemsOfUser(Optional<Long> userId, String status, Integer from, Integer size);
 
     BookingDto getLastBooking(Item item);
 
@@ -26,7 +26,7 @@ public interface BookingService {
 
     Object getItem(Optional<Long> userId, long itemId);
 
-    List<OwnerItemDto> getAllItems(Optional<Long> userId);
+    List<OwnerItemDto> getAllItems(Optional<Long> userId, Integer from, Integer size);
 
     void checkUserBookedItem(long itemId, Optional<Long> userId);
 }

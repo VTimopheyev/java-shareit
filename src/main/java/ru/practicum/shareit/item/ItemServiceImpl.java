@@ -2,11 +2,15 @@ package ru.practicum.shareit.item;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.OwnerItemDto;
 import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.request.ItemRequestRepository;
+import ru.practicum.shareit.request.PagingValidationException;
+import ru.practicum.shareit.request.model.ItemRequest;
 import ru.practicum.shareit.user.UserNotFoundException;
 import ru.practicum.shareit.user.UserRepository;
 import ru.practicum.shareit.user.UserService;
@@ -30,20 +34,28 @@ public class ItemServiceImpl implements ItemService {
     private final ItemMapper itemMapper;
     private final ItemRepository itemRepository;
     private final CommentsRepository commentsRepository;
+    private final ItemRequestRepository itemRequestRepository;
 
 
     public ItemDto addNewItem(Optional<Long> userId, ItemDto itemDTO) {
         if (userId.isEmpty()) {
             throw new UserValidationException();
         }
-
-        if (!userService.checkUserExists(userId.get())) {
-            throw new UserNotFoundException();
+        ItemRequest req;
+        if (itemDTO.getRequestId() == null){
+            req = null;
+        }else{
+            req = itemRequestRepository.findById(itemDTO.getRequestId())
+                    .orElseThrow(ItemRequestNotFoundException::new);
         }
+
+            User user = userRepository.findById(userId.get())
+                    .orElseThrow(UserNotFoundException::new);
 
         if (validateItemDTO(itemDTO)) {
             Item item = itemMapper.toItem(itemDTO);
-            item.setOwner(userService.getOwner(userId.get()));
+            item.setOwner(user);
+            item.setRequest(req);
             itemRepository.save(item);
             List<Comment> comments = commentsRepository.findByItemEquals(item);
 
@@ -78,8 +90,19 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public List<Item> getAllItems(User user) {
-        return itemRepository.findByOwnerEquals(user);
+    public List<Item> getAllItems(User user, Integer from, Integer size) {
+
+        if (from == null || size == null) {
+            return new ArrayList<>();
+        }
+
+        if (from <0 || size <= 0) {
+            throw new PagingValidationException();
+        }
+
+        PageRequest pr = PageRequest.of((from/size), size);
+
+        return itemRepository.findAllByOwner(user, pr);
     }
 
     public ItemDto updateItem(Optional<Long> userId, long itemId, ItemDto itemDTO) {
@@ -120,7 +143,7 @@ public class ItemServiceImpl implements ItemService {
     }
 
 
-    public List<ItemDto> searchItems(Optional<Long> userId, String text) {
+    public List<ItemDto> searchItems(Optional<Long> userId, String text, Integer from, Integer size) {
         if (userId.isEmpty() || !userService.checkUserExists(userId.get())) {
             throw new UserValidationException();
         }
@@ -129,8 +152,18 @@ public class ItemServiceImpl implements ItemService {
             return new ArrayList<>();
         }
 
+        if (from == null || size == null) {
+            return new ArrayList<>();
+        }
+
+        if (from <0 || size <= 0) {
+            throw new PagingValidationException();
+        }
+
+        PageRequest pr = PageRequest.of((from/size), size);
+
         return itemRepository
-                .findByNameContainingOrDescriptionContainingIgnoreCase(text, text)
+                .findByNameContainingOrDescriptionContainingIgnoreCase(text, text, pr)
                 .stream()
                 .filter(item -> item.isAvailable())
                 .map(item -> {
