@@ -2,6 +2,7 @@ package ru.practicum.shareit.booking;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.dto.BookingDto;
@@ -47,7 +48,7 @@ public class BookingServiceImpl implements BookingService {
         return null;
     }
 
-    private boolean validateBooking(BookingDto bookingDto, Optional<Long> userId) {
+    public boolean validateBooking(BookingDto bookingDto, Optional<Long> userId) {
         if (userId.isEmpty() || !userService.checkUserExists(userId.get())) {
             throw new UserNotFoundException();
         }
@@ -114,7 +115,7 @@ public class BookingServiceImpl implements BookingService {
                 .orElseThrow(BookingNotFoundException::new);
     }
 
-    private boolean checkStatusExists(String status) {
+    public boolean checkStatusExists(String status) {
         boolean exists = true;
         try {
             BookingStatus.valueOf(status);
@@ -134,7 +135,7 @@ public class BookingServiceImpl implements BookingService {
             return new ArrayList<>();
         }
 
-        if (from <0 || size <= 0) {
+        if (from < 0 || size <= 0) {
             throw new PagingValidationException();
         }
 
@@ -142,12 +143,8 @@ public class BookingServiceImpl implements BookingService {
             throw new UnsupportedBookingStatusError(status);
         }
 
-        if (!checkStatusExists(status)) {
-            throw new UnsupportedBookingStatusError(status);
-        }
-
         BookingStatus state = valueOf(status);
-        PageRequest pr = PageRequest.of((from/size), size);
+        PageRequest pr = PageRequest.of((from / size), size);
 
         switch (BookingStatus.valueOf(status)) {
             case ALL:
@@ -181,7 +178,7 @@ public class BookingServiceImpl implements BookingService {
             return new ArrayList<>();
         }
 
-        if (from <0 || size <= 0) {
+        if (from < 0 || size <= 0) {
             throw new PagingValidationException();
         }
 
@@ -190,7 +187,7 @@ public class BookingServiceImpl implements BookingService {
         }
 
         BookingStatus state = valueOf(status);
-        PageRequest pr = PageRequest.of((from/size), size);
+        PageRequest pr = PageRequest.of((from / size), size);
 
         switch (BookingStatus.valueOf(status)) {
             case ALL:
