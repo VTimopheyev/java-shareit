@@ -107,7 +107,7 @@ public class ItemServiceImpl implements ItemService {
 
     public ItemDto updateItem(Optional<Long> userId, long itemId, ItemDto itemDTO) {
         if (userId.isEmpty() || !userService.checkUserExists(userId.get()) ||
-                Optional.of(itemRepository.findById(itemId)).isEmpty()) {
+                itemRepository.findById(itemId).isEmpty()) {
             throw new UserValidationException();
         }
 
@@ -132,7 +132,7 @@ public class ItemServiceImpl implements ItemService {
 
     public void deleteItem(Optional<Long> userId, long itemId) {
         if (userId.isEmpty() || !userService.checkUserExists(userId.get()) ||
-                Optional.of(itemRepository.findById(itemId)).isEmpty()) {
+                itemRepository.findById(itemId).isEmpty()) {
             throw new UserValidationException();
         }
 

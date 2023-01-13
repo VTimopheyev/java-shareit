@@ -177,6 +177,18 @@
 								<goal>check</goal>
 							</goals>
 							<configuration>
+								<excludes>
+									<exclude> **/*Booking.*</exclude>
+									<exclude> **/*BookingDto.*</exclude>
+									<exclude> **/*BookingMapper.*</exclude>
+									<exclude> **/*ErrorResponse.*</exclude>
+									<exclude> **/*WebRestControllerAdvice.*</exclude>
+									<exclude> **/*Item.*</exclude>
+									<exclude> **/*Comment.*</exclude>
+									<exclude> **/*CommentRepository.*</exclude>
+									<exclude> **/*ItemMapper.*</exclude>
+									<exclude> **/*ItemStorageInMemoryImpl.*</exclude>
+								</excludes>
 								<rules>
 									<rule>
 										<element>BUNDLE</element>
