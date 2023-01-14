@@ -3,7 +3,6 @@ package ru.practicum.shareit.request;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.item.ItemMapper;
 import ru.practicum.shareit.item.ItemNotFoundException;
@@ -21,8 +20,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-
-import static org.springframework.data.domain.Sort.by;
 
 @Service
 @RequiredArgsConstructor
@@ -75,15 +72,15 @@ public class ItemRequestServiceImpl implements ItemRequestService {
             return new ArrayList<>();
         }
 
-        if (from <0 || size <= 0) {
+        if (from < 0 || size <= 0) {
             throw new PagingValidationException();
         }
 
         User user = validateUser(userId);
 
-        PageRequest pr = PageRequest.of((from/size), size);
+        PageRequest pr = PageRequest.of((from / size), size);
 
-         return itemRequestRepository
+        return itemRequestRepository
                 .findAllByUserNot(user, pr)
                 .stream()
                 .map(i -> {
@@ -112,21 +109,12 @@ public class ItemRequestServiceImpl implements ItemRequestService {
                 .orElseThrow(ItemNotFoundException::new);
     }
 
-    private User validateUser(Optional<Long> userId){
+    private User validateUser(Optional<Long> userId) {
         if (userId.isEmpty()) {
             throw new UserNotFoundException();
         }
 
-      return userRepository.findById(userId.get())
+        return userRepository.findById(userId.get())
                 .orElseThrow(UserNotFoundException::new);
     }
 }
-/*
-
-
-        Page<ItemRequest> pagedRequests = itemRequestRepository.findAll(pr);
-        if (pagedRequests.getContent().isEmpty()){
-            return new ArrayList<>();
-        }else {
-            return pagedRequests;
-        }*/

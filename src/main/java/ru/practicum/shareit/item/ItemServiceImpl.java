@@ -42,15 +42,15 @@ public class ItemServiceImpl implements ItemService {
             throw new UserValidationException();
         }
         ItemRequest req;
-        if (itemDTO.getRequestId() == null){
+        if (itemDTO.getRequestId() == null) {
             req = null;
-        }else{
+        } else {
             req = itemRequestRepository.findById(itemDTO.getRequestId())
                     .orElseThrow(ItemRequestNotFoundException::new);
         }
 
-            User user = userRepository.findById(userId.get())
-                    .orElseThrow(UserNotFoundException::new);
+        User user = userRepository.findById(userId.get())
+                .orElseThrow(UserNotFoundException::new);
 
         if (validateItemDTO(itemDTO)) {
             Item item = itemMapper.toItem(itemDTO);
@@ -96,11 +96,11 @@ public class ItemServiceImpl implements ItemService {
             return new ArrayList<>();
         }
 
-        if (from <0 || size <= 0) {
+        if (from < 0 || size <= 0) {
             throw new PagingValidationException();
         }
 
-        PageRequest pr = PageRequest.of((from/size), size);
+        PageRequest pr = PageRequest.of((from / size), size);
 
         return itemRepository.findAllByOwner(user, pr);
     }
@@ -156,11 +156,11 @@ public class ItemServiceImpl implements ItemService {
             return new ArrayList<>();
         }
 
-        if (from <0 || size <= 0) {
+        if (from < 0 || size <= 0) {
             throw new PagingValidationException();
         }
 
-        PageRequest pr = PageRequest.of((from/size), size);
+        PageRequest pr = PageRequest.of((from / size), size);
 
         return itemRepository
                 .findByNameContainingOrDescriptionContainingIgnoreCase(text, text, pr)

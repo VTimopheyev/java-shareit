@@ -4,14 +4,12 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.internal.matchers.Null;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.PageRequest;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.item.ItemNotFoundException;
 import ru.practicum.shareit.item.ItemService;
-import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.OwnerItemDto;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.request.PagingValidationException;
@@ -761,7 +759,7 @@ class BookingServiceImplTest {
         when(itemService.getAllItems(any(), any(), any())).thenReturn(items);
         when(itemService.convertToOwnerItemDto(any(), any(), any())).thenReturn(new OwnerItemDto());
 
-        List <OwnerItemDto> result = bookingService.getAllItems(userId, from,size);
+        List<OwnerItemDto> result = bookingService.getAllItems(userId, from, size);
 
         assertFalse(result.isEmpty());
     }
@@ -793,5 +791,6 @@ class BookingServiceImplTest {
 
 
         assertThrows(CommentsCreationIsNotAvailable.class,
-                () -> bookingService.checkUserBookedItem(itemId, userId));    }
+                () -> bookingService.checkUserBookedItem(itemId, userId));
+    }
 }

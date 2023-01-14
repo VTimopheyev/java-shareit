@@ -163,6 +163,22 @@
 					<version>0.8.8</version>
 					<configuration>
 						<output>file</output>
+						<excludes>
+							<exclude> **/*Booking.*</exclude>
+							<exclude> **/*BookingDto.*</exclude>
+							<exclude> **/*BookingMapper.*</exclude>
+							<exclude> **/*ErrorResponse.*</exclude>
+							<exclude> **/*WebRestControllerAdvice.*</exclude>
+							<exclude> **/*Item.*</exclude>
+							<exclude> **/*Comment.*</exclude>
+							<exclude> **/*ItemMapper.*</exclude>
+							<exclude> **/*ItemRequestMapper.*</exclude>
+							<exclude> **/*ItemRequest.*</exclude>
+							<exclude> **/*ItemRequestDto.*</exclude>
+							<exclude> **/*UserMapper.*</exclude>
+							<exclude> **/*UserStorageInMemoryImpl.*</exclude>
+							<exclude> **/*User.*</exclude>
+						</excludes>
 					</configuration>
 					<executions>
 						<execution>
@@ -178,16 +194,11 @@
 							</goals>
 							<configuration>
 								<excludes>
-									<exclude> **/*Booking.*</exclude>
-									<exclude> **/*BookingDto.*</exclude>
-									<exclude> **/*BookingMapper.*</exclude>
-									<exclude> **/*ErrorResponse.*</exclude>
-									<exclude> **/*WebRestControllerAdvice.*</exclude>
-									<exclude> **/*Item.*</exclude>
-									<exclude> **/*Comment.*</exclude>
-									<exclude> **/*CommentRepository.*</exclude>
-									<exclude> **/*ItemMapper.*</exclude>
-									<exclude> **/*ItemStorageInMemoryImpl.*</exclude>
+									<exclude>ru/practicum/shareit/booking/ErrorResponse.class</exclude>
+									<exclude>ru/practicum/shareit/booking/WebRestControllerAdvice.class</exclude>
+									<exclude>ru/practicum/shareit/item/Comment.class</exclude>
+									<exclude>ru/practicum/shareit/item/ItemRequestNotFoundException.class</exclude>
+									<exclude>ru/practicum/shareit/item/ItemValidationException.class</exclude>
 								</excludes>
 								<rules>
 									<rule>

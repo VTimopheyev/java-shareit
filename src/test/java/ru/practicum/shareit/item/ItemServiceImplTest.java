@@ -13,7 +13,6 @@ import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.request.ItemRequestRepository;
 import ru.practicum.shareit.request.PagingValidationException;
 import ru.practicum.shareit.request.model.ItemRequest;
-import ru.practicum.shareit.user.UserNotFoundException;
 import ru.practicum.shareit.user.UserRepository;
 import ru.practicum.shareit.user.UserService;
 import ru.practicum.shareit.user.UserValidationException;
@@ -46,7 +45,6 @@ class ItemServiceImplTest {
     CommentsRepository commentsRepository;
     @Mock
     ItemRequestRepository itemRequestRepository;
-
 
 
     @Test
@@ -199,7 +197,7 @@ class ItemServiceImplTest {
         Integer from = 0;
         Integer size = 5;
 
-        PageRequest pr = PageRequest.of((from/size), size);
+        PageRequest pr = PageRequest.of((from / size), size);
 
         when(itemRepository.findAllByOwner(user, pr)).thenReturn(new ArrayList<>());
 
@@ -353,7 +351,6 @@ class ItemServiceImplTest {
     }
 
 
-
     @Test
     void searchItemsWhenUserIdIsEmpty() {
         Optional<Long> userId = Optional.empty();
@@ -389,9 +386,9 @@ class ItemServiceImplTest {
 
         when(userService.checkUserExists(userId.get())).thenReturn(true);
 
-       List<ItemDto> list = itemService.searchItems(userId, text, from, size);
+        List<ItemDto> list = itemService.searchItems(userId, text, from, size);
 
-       assertTrue(list.isEmpty());
+        assertTrue(list.isEmpty());
     }
 
     @Test
@@ -427,7 +424,7 @@ class ItemServiceImplTest {
         String text = "Something";
         Integer from = 0;
         Integer size = 5;
-        PageRequest pr = PageRequest.of((from/size), size);
+        PageRequest pr = PageRequest.of((from / size), size);
 
         when(userService.checkUserExists(userId.get())).thenReturn(true);
 
@@ -447,5 +444,4 @@ class ItemServiceImplTest {
         verify(itemRepository).findById(id);
 
     }
-
 }

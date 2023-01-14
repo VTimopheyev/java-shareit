@@ -18,7 +18,7 @@ public class ItemMapper {
     public ItemDto toItemDto(Item item, List<Comment> comments) {
         Long requestId = null;
 
-        if (item.getRequest() != null){
+        if (item.getRequest() != null) {
             requestId = item.getRequest().getId();
         }
 

@@ -52,7 +52,7 @@ public class BookingControllerTest {
         long bookingId = 1L;
 
         mockMvc.perform(get("/bookings/{bookingId}", bookingId)
-                .header("X-Sharer-User-Id", 2))
+                        .header("X-Sharer-User-Id", 2))
                 .andExpect(status().isOk());
 
         verify(bookingService).getBooking(userId, bookingId);
@@ -60,7 +60,7 @@ public class BookingControllerTest {
 
     @SneakyThrows
     @Test
-    public void setApprovalStatusTest(){
+    public void setApprovalStatusTest() {
         Optional<Long> userId = Optional.of(2L);
         long bookingId = 1L;
         Booking booking = new Booking();
@@ -82,28 +82,28 @@ public class BookingControllerTest {
 
     @SneakyThrows
     @Test
-    public void addBookingTest(){
+    public void addBookingTest() {
         Booking booking = new Booking();
         Optional<Long> userId = Optional.of(2L);
         BookingDto bookingDto = new BookingDto();
 
         when(bookingService.addNewBooking(userId, bookingDto)).thenReturn(booking);
 
-       String result =  mockMvc.perform(post("/bookings")
-                .header("X-Sharer-User-Id", 2)
-               .contentType("application/json")
-               .content(objectMapper.writeValueAsString(booking)))
-               .andExpect(status().isOk())
-               .andReturn()
-               .getResponse()
-               .getContentAsString();
+        String result = mockMvc.perform(post("/bookings")
+                        .header("X-Sharer-User-Id", 2)
+                        .contentType("application/json")
+                        .content(objectMapper.writeValueAsString(booking)))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
 
-       assertEquals(objectMapper.writeValueAsString(booking), result);
+        assertEquals(objectMapper.writeValueAsString(booking), result);
     }
 
     @SneakyThrows
     @Test
-    public void getBookingsOfUserTest(){
+    public void getBookingsOfUserTest() {
         Optional<Long> userId = Optional.of(2L);
         List<Booking> bookings = new ArrayList<>();
         String state = "ALL";
@@ -127,7 +127,7 @@ public class BookingControllerTest {
 
     @SneakyThrows
     @Test
-    public void getBookingsOfItemsOfUserTest(){
+    public void getBookingsOfItemsOfUserTest() {
         Optional<Long> userId = Optional.of(2L);
         List<Booking> bookings = new ArrayList<>();
         String state = "ALL";

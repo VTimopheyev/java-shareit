@@ -52,7 +52,7 @@ class ItemControllerTest {
 
         when(itemService.addNewItem(userId, itemDto)).thenReturn(itemDto);
 
-        String result =  mockMvc.perform(post("/items")
+        String result = mockMvc.perform(post("/items")
                         .header("X-Sharer-User-Id", 2)
                         .contentType("application/json")
                         .content(objectMapper.writeValueAsString(itemDto)))
@@ -63,6 +63,7 @@ class ItemControllerTest {
 
         assertEquals(objectMapper.writeValueAsString(itemDto), result);
     }
+
     @SneakyThrows
     @Test
     void update() {
@@ -72,7 +73,7 @@ class ItemControllerTest {
 
         when(itemService.updateItem(userId, itemId, itemDto)).thenReturn(itemDto);
 
-        String result =  mockMvc.perform(patch("/items/{itemId}", itemId)
+        String result = mockMvc.perform(patch("/items/{itemId}", itemId)
                         .header("X-Sharer-User-Id", 2)
                         .contentType("application/json")
                         .content(objectMapper.writeValueAsString(itemDto)))
@@ -110,7 +111,7 @@ class ItemControllerTest {
 
         when(itemService.searchItems(userId, text, from, size)).thenReturn(list);
 
-        String result =  mockMvc.perform(get("/items")
+        String result = mockMvc.perform(get("/items/search")
                         .header("X-Sharer-User-Id", 2)
                         .param("text", String.valueOf("search text"))
                         .param("from", String.valueOf("0"))
@@ -132,7 +133,7 @@ class ItemControllerTest {
 
         when(itemService.addNewComment(userId, itemId, comment)).thenReturn(comment);
 
-        String result =  mockMvc.perform(post("/items/{itemId}/comment", itemId)
+        String result = mockMvc.perform(post("/items/{itemId}/comment", itemId)
                         .header("X-Sharer-User-Id", 2)
                         .contentType("application/json")
                         .content(objectMapper.writeValueAsString(comment)))
@@ -167,7 +168,7 @@ class ItemControllerTest {
 
         when(bookingService.getAllItems(userId, from, size)).thenReturn(list);
 
-        String result =  mockMvc.perform(get("/items")
+        String result = mockMvc.perform(get("/items")
                         .header("X-Sharer-User-Id", 2)
                         .param("from", String.valueOf("0"))
                         .param("size", String.valueOf("5")))

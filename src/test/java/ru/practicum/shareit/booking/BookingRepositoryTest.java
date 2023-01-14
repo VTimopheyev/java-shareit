@@ -40,7 +40,7 @@ class BookingRepositoryTest {
     Booking booking2;
 
     @BeforeEach
-    public void createInstances(){
+    public void createInstances() {
         User user1 = new User();
         user1.setName("User1");
         user1.setEmail("user1@mail.com");
@@ -229,7 +229,7 @@ class BookingRepositoryTest {
     }
 
     @AfterEach
-    public void deleteInstances(){
+    public void deleteInstances() {
         userRepository.deleteAll();
         itemRepository.deleteAll();
         bookingRepository.deleteAll();
