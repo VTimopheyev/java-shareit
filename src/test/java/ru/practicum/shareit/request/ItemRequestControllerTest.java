@@ -29,21 +29,21 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest
 class ItemRequestControllerTest {
     @Autowired
-    MockMvc mockMvc;
+    private MockMvc mockMvc;
     @Autowired
-    ObjectMapper objectMapper;
+    private ObjectMapper objectMapper;
     @MockBean
-    ItemRequestService itemRequestService;
+    private ItemRequestService itemRequestService;
     @MockBean
-    BookingController bookingController;
+    private BookingController bookingController;
     @MockBean
-    BookingService bookingService;
+    private BookingService bookingService;
     @MockBean
-    ItemService itemService;
+    private ItemService itemService;
     @MockBean
-    UserController userController;
+    private UserController userController;
     @MockBean
-    UserService userService;
+    private UserService userService;
 
     @SneakyThrows
     @Test

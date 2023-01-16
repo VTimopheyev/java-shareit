@@ -24,10 +24,10 @@ import static org.mockito.Mockito.when;
 class BookingMapperTest {
 
     @InjectMocks
-    BookingMapper bookingMapper;
+    private BookingMapper bookingMapper;
 
     @Mock
-    ItemService itemService;
+    private ItemService itemService;
 
 
     @Test

@@ -12,7 +12,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @ExtendWith(MockitoExtension.class)
 class UserMapperTest {
     @InjectMocks
-    UserMapper userMapper;
+    private UserMapper userMapper;
 
     @Test
     void toUserDto() {

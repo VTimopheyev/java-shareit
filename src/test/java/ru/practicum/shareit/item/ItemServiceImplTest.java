@@ -31,20 +31,20 @@ import static org.mockito.Mockito.when;
 class ItemServiceImplTest {
 
     @InjectMocks
-    ItemServiceImpl itemService;
+    private ItemServiceImpl itemService;
 
     @Mock
-    UserService userService;
+    private UserService userService;
     @Mock
-    UserRepository userRepository;
+    private UserRepository userRepository;
     @Mock
-    ItemMapper itemMapper;
+    private ItemMapper itemMapper;
     @Mock
-    ItemRepository itemRepository;
+    private ItemRepository itemRepository;
     @Mock
-    CommentsRepository commentsRepository;
+    private CommentsRepository commentsRepository;
     @Mock
-    ItemRequestRepository itemRequestRepository;
+    private ItemRequestRepository itemRequestRepository;
 
 
     @Test

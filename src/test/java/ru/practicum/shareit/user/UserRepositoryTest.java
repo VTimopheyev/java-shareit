@@ -13,9 +13,9 @@ import static org.junit.jupiter.api.Assertions.*;
 class UserRepositoryTest {
 
     @Autowired
-    UserRepository userRepository;
-    User user1;
-    User user2;
+    private UserRepository userRepository;
+    private User user1;
+    private User user2;
 
 
     @Test

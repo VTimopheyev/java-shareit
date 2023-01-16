@@ -19,11 +19,11 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class UserServiceImplTest {
     @Mock
-    UserRepository userRepository;
+    private UserRepository userRepository;
     @Mock
-    UserMapper userMapper;
+    private UserMapper userMapper;
     @InjectMocks
-    UserServiceImpl userService;
+    private UserServiceImpl userService;
 
     @Test
     void createUserWhenUserEmailNotValid() {

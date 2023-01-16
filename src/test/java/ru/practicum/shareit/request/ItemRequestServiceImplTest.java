@@ -26,18 +26,18 @@ import static org.mockito.Mockito.when;
 class ItemRequestServiceImplTest {
 
     @Mock
-    ItemRepository itemRepository;
+    private ItemRepository itemRepository;
     @Mock
-    UserRepository userRepository;
+    private UserRepository userRepository;
     @Mock
-    ItemRequestMapper itemRequestMapper;
+    private ItemRequestMapper itemRequestMapper;
     @Mock
-    ItemRequestRepository itemRequestRepository;
+    private ItemRequestRepository itemRequestRepository;
     @Mock
-    ItemMapper itemMapper;
+    private ItemMapper itemMapper;
 
     @InjectMocks
-    ItemRequestServiceImpl itemRequestService;
+    private ItemRequestServiceImpl itemRequestService;
 
     @Test
     void addNewRequestWhenDescriptionIsNull() {

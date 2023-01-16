@@ -35,19 +35,19 @@ import static org.mockito.Mockito.when;
 class BookingServiceImplTest {
 
     @Mock
-    BookingRepository bookingRepository;
+    private BookingRepository bookingRepository;
 
     @Mock
-    UserService userService;
+    private UserService userService;
 
     @Mock
-    ItemService itemService;
+    private ItemService itemService;
 
     @Mock
-    BookingMapper bookingMapper;
+    private BookingMapper bookingMapper;
 
     @InjectMocks
-    BookingServiceImpl bookingService;
+    private BookingServiceImpl bookingService;
 
     @Test
     void addNewBookingWhenDtoValid() {

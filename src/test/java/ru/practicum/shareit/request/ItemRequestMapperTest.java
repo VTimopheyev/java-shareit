@@ -20,7 +20,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class ItemRequestMapperTest {
 
     @InjectMocks
-    ItemRequestMapper itemRequestMapper;
+    private ItemRequestMapper itemRequestMapper;
 
     @Test
     void toItemRequestDto() {

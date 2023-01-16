@@ -23,13 +23,13 @@ import static org.junit.jupiter.api.Assertions.*;
 class BookingRepositoryTest {
 
     @Autowired
-    BookingRepository bookingRepository;
+    private BookingRepository bookingRepository;
 
     @Autowired
-    UserRepository userRepository;
+    private UserRepository userRepository;
 
     @Autowired
-    ItemRepository itemRepository;
+    private ItemRepository itemRepository;
 
     User user1;
     User user2;
