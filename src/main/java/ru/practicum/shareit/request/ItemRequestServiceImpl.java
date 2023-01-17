@@ -18,6 +18,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -33,7 +34,7 @@ public class ItemRequestServiceImpl implements ItemRequestService {
 
     @Override
     public ItemRequest addNewRequest(Optional<Long> userId, ItemRequestDto itemRequestDto) {
-        if (itemRequestDto.getDescription() == null || itemRequestDto.getDescription().isEmpty()) {
+        if (Objects.isNull(itemRequestDto.getDescription()) || itemRequestDto.getDescription().isEmpty()) {
             throw new ItemRequestValidationException();
         }
 
@@ -68,7 +69,7 @@ public class ItemRequestServiceImpl implements ItemRequestService {
     @Override
     public List<ItemRequestDto> getAllRequests(Integer from, Integer size, Optional<Long> userId) {
 
-        if (from == null || size == null) {
+        if (Objects.isNull(from) || Objects.isNull(size)) {
             return new ArrayList<>();
         }
 

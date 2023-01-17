@@ -57,8 +57,8 @@
         <dependency>
             <groupId>org.jetbrains</groupId>
             <artifactId>annotations</artifactId>
-            <version>RELEASE</version>
-            <scope>compile</scope>
+			<version>RELEASE</version>
+			<scope>compile</scope>
         </dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -79,7 +79,6 @@
 		<dependency>
 			<groupId>org.postgresql</groupId>
 			<artifactId>postgresql</artifactId>
-			<version>42.3.2</version>
 		</dependency>
 	</dependencies>
 
@@ -164,20 +163,17 @@
 					<configuration>
 						<output>file</output>
 						<excludes>
-							<exclude> **/*Booking.*</exclude>
-							<exclude> **/*BookingDto.*</exclude>
-							<exclude> **/*BookingMapper.*</exclude>
-							<exclude> **/*ErrorResponse.*</exclude>
-							<exclude> **/*WebRestControllerAdvice.*</exclude>
-							<exclude> **/*Item.*</exclude>
-							<exclude> **/*Comment.*</exclude>
-							<exclude> **/*ItemMapper.*</exclude>
-							<exclude> **/*ItemRequestMapper.*</exclude>
-							<exclude> **/*ItemRequest.*</exclude>
-							<exclude> **/*ItemRequestDto.*</exclude>
-							<exclude> **/*UserMapper.*</exclude>
-							<exclude> **/*UserStorageInMemoryImpl.*</exclude>
-							<exclude> **/*User.*</exclude>
+							<exclude>ru/practicum/shareit/booking/ErrorResponse.class</exclude>
+							<exclude>ru/practicum/shareit/booking/WebRestControllerAdvice.class</exclude>
+							<exclude>ru/practicum/shareit/item/Comment.class</exclude>
+							<exclude>ru/practicum/shareit/item/ItemRequestNotFoundException.class</exclude>
+							<exclude>ru/practicum/shareit/item/ItemValidationException.class</exclude>
+							<exclude>ru/practicum/shareit/booking/dto/BookingDto.class</exclude>
+							<exclude>ru/practicum/shareit/item/dto/ItemDto.class</exclude>
+							<exclude>ru/practicum/shareit/item/dto/OwnerItemDto.class</exclude>
+							<exclude>ru/practicum/shareit/request/dto/ItemRequestDto.class</exclude>
+							<exclude>ru/practicum/shareit/request/model/ItemRequest.class</exclude>
+							<exclude>ru/practicum/shareit/user/dto/UserDto.class</exclude>
 						</excludes>
 					</configuration>
 					<executions>
@@ -199,6 +195,12 @@
 									<exclude>ru/practicum/shareit/item/Comment.class</exclude>
 									<exclude>ru/practicum/shareit/item/ItemRequestNotFoundException.class</exclude>
 									<exclude>ru/practicum/shareit/item/ItemValidationException.class</exclude>
+									<exclude>ru/practicum/shareit/booking/dto/BookingDto.class</exclude>
+									<exclude>ru/practicum/shareit/item/dto/ItemDto.class</exclude>
+									<exclude>ru/practicum/shareit/item/dto/OwnerItemDto.class</exclude>
+									<exclude>ru/practicum/shareit/request/dto/ItemRequestDto.class</exclude>
+									<exclude>ru/practicum/shareit/request/model/ItemRequest.class</exclude>
+									<exclude>ru/practicum/shareit/user/dto/UserDto.class</exclude>
 								</excludes>
 								<rules>
 									<rule>
