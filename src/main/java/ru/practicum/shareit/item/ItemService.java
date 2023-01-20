@@ -15,13 +15,13 @@ public interface ItemService {
 
     OwnerItemDto convertToOwnerItemDto(Item i, BookingDto lastBooking, BookingDto nextBooking);
 
-    List<Item> getAllItems(User user);
+    List<Item> getAllItems(User user, Integer from, Integer size);
 
     ItemDto updateItem(Optional<Long> userId, long itemId, ItemDto itemDTO);
 
     void deleteItem(Optional<Long> userId, long itemId);
 
-    List<ItemDto> searchItems(Optional<Long> userId, String text);
+    List<ItemDto> searchItems(Optional<Long> userId, String text, Integer from, Integer size);
 
     Optional<Item> getItemById(Long itemId);
 

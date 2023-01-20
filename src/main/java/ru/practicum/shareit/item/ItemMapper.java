@@ -16,12 +16,19 @@ import java.util.List;
 public class ItemMapper {
 
     public ItemDto toItemDto(Item item, List<Comment> comments) {
+        Long requestId = null;
+
+        if (item.getRequest() != null) {
+            requestId = item.getRequest().getId();
+        }
+
         return new ItemDto(
                 item.getId(),
                 item.getName(),
                 item.getDescription(),
                 item.isAvailable(),
-                comments
+                comments,
+                requestId
         );
     }
 

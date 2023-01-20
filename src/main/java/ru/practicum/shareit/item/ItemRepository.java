@@ -1,15 +1,19 @@
 package ru.practicum.shareit.item;
 
-import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.repository.PagingAndSortingRepository;
 import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.request.model.ItemRequest;
 import ru.practicum.shareit.user.model.User;
 
-import java.util.Collection;
 import java.util.List;
 
-public interface ItemRepository extends JpaRepository<Item, Long> {
+public interface ItemRepository extends PagingAndSortingRepository<Item, Long> {
 
-    List<Item> findByOwnerEquals(User user);
+    List<Item> findAllByOwner(User user, PageRequest pr);
 
-    Collection<Item> findByNameContainingOrDescriptionContainingIgnoreCase(String text, String text1);
+    List<Item> findByNameContainingOrDescriptionContainingIgnoreCase(String text, String text1, PageRequest pr);
+
+    List<Item> findByRequestEquals(ItemRequest i);
+
 }

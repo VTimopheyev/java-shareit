@@ -2,6 +2,7 @@ package ru.practicum.shareit.booking;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.model.Booking;
@@ -9,6 +10,7 @@ import ru.practicum.shareit.item.ItemNotFoundException;
 import ru.practicum.shareit.item.ItemService;
 import ru.practicum.shareit.item.dto.OwnerItemDto;
 import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.request.PagingValidationException;
 import ru.practicum.shareit.user.UserNotFoundException;
 import ru.practicum.shareit.user.UserService;
 import ru.practicum.shareit.user.UserValidationException;
@@ -45,7 +47,7 @@ public class BookingServiceImpl implements BookingService {
         return null;
     }
 
-    private boolean validateBooking(BookingDto bookingDto, Optional<Long> userId) {
+    public boolean validateBooking(BookingDto bookingDto, Optional<Long> userId) {
         if (userId.isEmpty() || !userService.checkUserExists(userId.get())) {
             throw new UserNotFoundException();
         }
@@ -112,7 +114,7 @@ public class BookingServiceImpl implements BookingService {
                 .orElseThrow(BookingNotFoundException::new);
     }
 
-    private boolean checkStatusExists(String status) {
+    public boolean checkStatusExists(String status) {
         boolean exists = true;
         try {
             BookingStatus.valueOf(status);
@@ -123,9 +125,17 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public List<Booking> getBookingsOfUser(Optional<Long> userId, String status) {
+    public List<Booking> getBookingsOfUser(Optional<Long> userId, String status, Integer from, Integer size) {
         if (userId.isEmpty()) {
             throw new UserValidationException();
+        }
+
+        if (from == null || size == null) {
+            return new ArrayList<>();
+        }
+
+        if (from < 0 || size <= 0) {
+            throw new PagingValidationException();
         }
 
         if (!checkStatusExists(status)) {
@@ -133,33 +143,42 @@ public class BookingServiceImpl implements BookingService {
         }
 
         BookingStatus state = valueOf(status);
+        PageRequest pr = PageRequest.of((from / size), size);
 
         switch (BookingStatus.valueOf(status)) {
             case ALL:
-                return bookingRepository.findByBookerEqualsOrderByStartDesc(userService.getOwner(userId.get()));
+                return bookingRepository.findByBookerEqualsOrderByStartDesc(userService.getOwner(userId.get()), pr);
             case FUTURE:
                 return bookingRepository.findByBookerEqualsAndStartAfterOrderByStartDesc(
                         userService.getOwner(userId.get()),
-                        LocalDateTime.ofInstant(Instant.now(), ZoneId.systemDefault()));
+                        LocalDateTime.ofInstant(Instant.now(), ZoneId.systemDefault()), pr);
             case PAST:
                 return bookingRepository.findByBookerEqualsAndEndBeforeOrderByStartDesc(
                         userService.getOwner(userId.get()),
-                        LocalDateTime.ofInstant(Instant.now(), ZoneId.systemDefault()));
+                        LocalDateTime.ofInstant(Instant.now(), ZoneId.systemDefault()), pr);
             case CURRENT:
                 return bookingRepository.findByBookerEqualsAndStartBeforeAndEndAfterOrderByStartDesc(
                         userService.getOwner(userId.get()),
                         LocalDateTime.ofInstant(Instant.now(), ZoneId.systemDefault()),
-                        LocalDateTime.ofInstant(Instant.now(), ZoneId.systemDefault()));
+                        LocalDateTime.ofInstant(Instant.now(), ZoneId.systemDefault()), pr);
             default:
                 return bookingRepository.findByBookerEqualsAndStatusEqualsOrderByStartDesc(
-                        userService.getOwner(userId.get()), state);
+                        userService.getOwner(userId.get()), state, pr);
         }
     }
 
     @Override
-    public List<Booking> getBookedItemsOfUser(Optional<Long> userId, String status) {
+    public List<Booking> getBookedItemsOfUser(Optional<Long> userId, String status, Integer from, Integer size) {
         if (userId.isEmpty()) {
             throw new UserValidationException();
+        }
+
+        if (from == null || size == null) {
+            return new ArrayList<>();
+        }
+
+        if (from < 0 || size <= 0) {
+            throw new PagingValidationException();
         }
 
         if (!checkStatusExists(status)) {
@@ -167,26 +186,27 @@ public class BookingServiceImpl implements BookingService {
         }
 
         BookingStatus state = valueOf(status);
+        PageRequest pr = PageRequest.of((from / size), size);
 
         switch (BookingStatus.valueOf(status)) {
             case ALL:
-                return bookingRepository.findByOwnerEqualsOrderByStartDesc(userService.getOwner(userId.get()));
+                return bookingRepository.findByOwnerEqualsOrderByStartDesc(userService.getOwner(userId.get()), pr);
             case FUTURE:
                 return bookingRepository.findByOwnerEqualsAndStartAfterOrderByStartDesc(
                         userService.getOwner(userId.get()),
-                        LocalDateTime.ofInstant(Instant.now(), ZoneId.systemDefault()));
+                        LocalDateTime.ofInstant(Instant.now(), ZoneId.systemDefault()), pr);
             case PAST:
                 return bookingRepository.findByOwnerEqualsAndEndBeforeOrderByStartDesc(
                         userService.getOwner(userId.get()),
-                        LocalDateTime.ofInstant(Instant.now(), ZoneId.systemDefault()));
+                        LocalDateTime.ofInstant(Instant.now(), ZoneId.systemDefault()), pr);
             case CURRENT:
                 return bookingRepository.findByOwnerEqualsAndStartBeforeAndEndAfterOrderByStartDesc(
                         userService.getOwner(userId.get()),
                         LocalDateTime.ofInstant(Instant.now(), ZoneId.systemDefault()),
-                        LocalDateTime.ofInstant(Instant.now(), ZoneId.systemDefault()));
+                        LocalDateTime.ofInstant(Instant.now(), ZoneId.systemDefault()), pr);
             default:
                 return bookingRepository.findByOwnerEqualsAndStatusEqualsOrderByStartDesc(
-                        userService.getOwner(userId.get()), state);
+                        userService.getOwner(userId.get()), state, pr);
         }
     }
 
@@ -229,12 +249,12 @@ public class BookingServiceImpl implements BookingService {
         }
     }
 
-    public List<OwnerItemDto> getAllItems(Optional<Long> userId) {
+    public List<OwnerItemDto> getAllItems(Optional<Long> userId, Integer from, Integer size) {
         if (userId.isEmpty() || !userService.checkUserExists(userId.get())) {
             throw new UserValidationException();
         }
 
-        List<Item> allItems = itemService.getAllItems(userService.getOwner(userId.get()));
+        List<Item> allItems = itemService.getAllItems(userService.getOwner(userId.get()), from, size);
         List<OwnerItemDto> allOwnerDtoItems = new ArrayList<>();
 
         for (Item i : allItems) {
