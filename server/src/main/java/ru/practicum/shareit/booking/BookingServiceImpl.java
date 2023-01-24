@@ -61,9 +61,9 @@ public class BookingServiceImpl implements BookingService {
             throw new ItemNotAvailableException();
         }
 
-        if (bookingDto.getEnd().isBefore(LocalDateTime.ofInstant(Instant.now(), ZoneId.of("Europe/Moscow"))) ||
+        if (bookingDto.getEnd().isBefore(LocalDateTime.ofInstant(Instant.now(), ZoneId.systemDefault())) ||
                 bookingDto.getEnd().isBefore(bookingDto.getStart()) ||
-                bookingDto.getStart().isBefore(LocalDateTime.ofInstant(Instant.now(), ZoneId.of("Europe/Moscow")))) {
+                bookingDto.getStart().isBefore(LocalDateTime.ofInstant(Instant.now(), ZoneId.systemDefault()))) {
             throw new BookingValidationException();
         }
 
@@ -151,16 +151,16 @@ public class BookingServiceImpl implements BookingService {
             case FUTURE:
                 return bookingRepository.findByBookerEqualsAndStartAfterOrderByStartDesc(
                         userService.getOwner(userId.get()),
-                        LocalDateTime.ofInstant(Instant.now(), ZoneId.of("Europe/Moscow")), pr);
+                        LocalDateTime.ofInstant(Instant.now(), ZoneId.systemDefault()), pr);
             case PAST:
                 return bookingRepository.findByBookerEqualsAndEndBeforeOrderByStartDesc(
                         userService.getOwner(userId.get()),
-                        LocalDateTime.ofInstant(Instant.now(), ZoneId.of("Europe/Moscow")), pr);
+                        LocalDateTime.ofInstant(Instant.now(), ZoneId.systemDefault()), pr);
             case CURRENT:
                 return bookingRepository.findByBookerEqualsAndStartBeforeAndEndAfterOrderByStartDesc(
                         userService.getOwner(userId.get()),
-                        LocalDateTime.ofInstant(Instant.now(), ZoneId.of("Europe/Moscow")),
-                        LocalDateTime.ofInstant(Instant.now(), ZoneId.of("Europe/Moscow")), pr);
+                        LocalDateTime.ofInstant(Instant.now(), ZoneId.systemDefault()),
+                        LocalDateTime.ofInstant(Instant.now(), ZoneId.systemDefault()), pr);
             default:
                 return bookingRepository.findByBookerEqualsAndStatusEqualsOrderByStartDesc(
                         userService.getOwner(userId.get()), state, pr);
@@ -194,16 +194,16 @@ public class BookingServiceImpl implements BookingService {
             case FUTURE:
                 return bookingRepository.findByOwnerEqualsAndStartAfterOrderByStartDesc(
                         userService.getOwner(userId.get()),
-                        LocalDateTime.ofInstant(Instant.now(), ZoneId.of("Europe/Moscow")), pr);
+                        LocalDateTime.ofInstant(Instant.now(), ZoneId.systemDefault()), pr);
             case PAST:
                 return bookingRepository.findByOwnerEqualsAndEndBeforeOrderByStartDesc(
                         userService.getOwner(userId.get()),
-                        LocalDateTime.ofInstant(Instant.now(), ZoneId.of("Europe/Moscow")), pr);
+                        LocalDateTime.ofInstant(Instant.now(), ZoneId.systemDefault()), pr);
             case CURRENT:
                 return bookingRepository.findByOwnerEqualsAndStartBeforeAndEndAfterOrderByStartDesc(
                         userService.getOwner(userId.get()),
-                        LocalDateTime.ofInstant(Instant.now(), ZoneId.of("Europe/Moscow")),
-                        LocalDateTime.ofInstant(Instant.now(), ZoneId.of("Europe/Moscow")), pr);
+                        LocalDateTime.ofInstant(Instant.now(), ZoneId.systemDefault()),
+                        LocalDateTime.ofInstant(Instant.now(), ZoneId.systemDefault()), pr);
             default:
                 return bookingRepository.findByOwnerEqualsAndStatusEqualsOrderByStartDesc(
                         userService.getOwner(userId.get()), state, pr);
@@ -212,7 +212,7 @@ public class BookingServiceImpl implements BookingService {
 
     public BookingDto getLastBooking(Item item) {
         List<Booking> bookings = bookingRepository.findByItemEqualsAndStartBeforeAndStatusEqualsOrderByEndDesc(
-                item, LocalDateTime.ofInstant(Instant.now(), ZoneId.of("Europe/Moscow")), APPROVED);
+                item, LocalDateTime.ofInstant(Instant.now(), ZoneId.systemDefault()), APPROVED);
         if (bookings.isEmpty()) {
             return null;
         } else {
@@ -222,7 +222,7 @@ public class BookingServiceImpl implements BookingService {
 
     public BookingDto getNextBooking(Item item) {
         List<Booking> bookings = bookingRepository.findByItemEqualsAndStartAfterAndStatusEqualsOrderByStartDesc(
-                item, LocalDateTime.ofInstant(Instant.now(), ZoneId.of("Europe/Moscow")), APPROVED);
+                item, LocalDateTime.ofInstant(Instant.now(), ZoneId.systemDefault()), APPROVED);
         if (bookings.isEmpty()) {
             return null;
         } else {
@@ -273,7 +273,7 @@ public class BookingServiceImpl implements BookingService {
         User booker = userService.getOwner(userId.get());
 
         List<Booking> bookings = bookingRepository.findByBookerEqualsAndItemEqualsAndStatusEqualsAndStartBefore(
-                booker, item, APPROVED, LocalDateTime.ofInstant(Instant.now(), ZoneId.of("Europe/Moscow")));
+                booker, item, APPROVED, LocalDateTime.ofInstant(Instant.now(), ZoneId.systemDefault()));
         if (bookings.isEmpty()) {
             throw new CommentsCreationIsNotAvailable();
         }

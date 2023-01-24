@@ -41,7 +41,7 @@ public class ItemRequestServiceImpl implements ItemRequestService {
 
         ItemRequest r = new ItemRequest();
         r.setDescription(itemRequestDto.getDescription());
-        r.setCreated(LocalDateTime.ofInstant(Instant.now(), ZoneId.of("Europe/Moscow")));
+        r.setCreated(LocalDateTime.ofInstant(Instant.now(), ZoneId.systemDefault()));
         r.setUser(userRepository.findOneById(userId));
 
         return itemRequestRepository.save(r);
