@@ -9,9 +9,12 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.booking.dto.BookItemRequestDto;
 import ru.practicum.shareit.booking.dto.BookingState;
+import ru.practicum.shareit.user.UserValidationException;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Positive;
+import javax.validation.constraints.PositiveOrZero;
+import java.util.Optional;
 
 @Controller
 @RequestMapping(path = "/bookings")
@@ -22,46 +25,57 @@ public class BookingController {
     private final BookingClient bookingClient;
 
     @PostMapping
-    public ResponseEntity<Object> bookItem(@RequestHeader("X-Sharer-User-Id") long userId,
+    public ResponseEntity<Object> bookItem(@RequestHeader("X-Sharer-User-Id") Optional<Long> userId,
                                            @RequestBody @Valid BookItemRequestDto requestDto) {
+        checkUserIdPresent(userId);
         log.info("Creating booking {}, userId={}", requestDto, userId);
-        return bookingClient.bookItem(userId, requestDto);
+        return bookingClient.bookItem(userId.get(), requestDto);
     }
 
     @PatchMapping("/{bookingId}")
-    public ResponseEntity<Object> setApprovalStatus(@RequestHeader("X-Sharer-User-Id") long userId,
+    public ResponseEntity<Object> setApprovalStatus(@RequestHeader("X-Sharer-User-Id") Optional<Long> userId,
                                                     @PathVariable long bookingId,
                                                     @RequestParam Boolean approved) {
+        checkUserIdPresent(userId);
         log.info("Changing booking {} status to {}", bookingId, approved);
-        return bookingClient.setApprovalStatus(userId, bookingId, approved);
+        return bookingClient.setApprovalStatus(userId.get(), bookingId, approved);
     }
 
     @GetMapping("/{bookingId}")
-    public ResponseEntity<Object> getBooking(@RequestHeader("X-Sharer-User-Id") long userId,
+    public ResponseEntity<Object> getBooking(@RequestHeader("X-Sharer-User-Id") Optional<Long> userId,
                                              @PathVariable Long bookingId) {
+        checkUserIdPresent(userId);
         log.info("Get booking {}, userId={}", bookingId, userId);
-        return bookingClient.getBooking(userId, bookingId);
+        return bookingClient.getBooking(userId.get(), bookingId);
     }
 
     @GetMapping
-    public ResponseEntity<Object> getBookingsOfUser(@RequestHeader("X-Sharer-User-Id") long bookerId,
+    public ResponseEntity<Object> getBookingsOfUser(@RequestHeader("X-Sharer-User-Id") Optional<Long> bookerId,
                                                     @RequestParam(name = "state", defaultValue = "all") String state,
-                                                    @RequestParam(name = "from", defaultValue = "0") Integer from,
+                                                    @PositiveOrZero @RequestParam(name = "from", defaultValue = "0") Integer from,
                                                     @Positive @RequestParam(name = "size", defaultValue = "10") Integer size) {
         BookingState stateParam = BookingState.from(state)
                 .orElseThrow(() -> new UnsupportedBookingStatusError(state));
-        log.info("Get booking with state {}, userId={}, from={}, size={}", stateParam, bookerId, from, size);
-        return bookingClient.getBookingsOfUser(bookerId, stateParam, from, size);
+        checkUserIdPresent(bookerId);
+        log.info("Get booking with state {}, userId={}, from={}, size={}", stateParam, bookerId.get(), from, size);
+        return bookingClient.getBookingsOfUser(bookerId.get(), stateParam, from, size);
     }
 
     @GetMapping("/owner")
-    public ResponseEntity<Object> getBookingsOfItemsOfUser(@RequestHeader("X-Sharer-User-Id") long ownerId,
+    public ResponseEntity<Object> getBookingsOfItemsOfUser(@RequestHeader("X-Sharer-User-Id") Optional<Long> ownerId,
                                                            @RequestParam(defaultValue = "ALL") String state,
-                                                           @RequestParam(defaultValue = "0") Integer from,
-                                                           @RequestParam(defaultValue = "5") Integer size) {
+                                                           @PositiveOrZero @RequestParam(defaultValue = "0") Integer from,
+                                                           @Positive @RequestParam(defaultValue = "5") Integer size) {
         BookingState stateParam = BookingState.from(state)
                 .orElseThrow(() -> new UnsupportedBookingStatusError(state));
+        checkUserIdPresent(ownerId);
         log.info("Get booking with state {}, ownerId={}, from={}, size={}", stateParam, ownerId, from, size);
-        return bookingClient.getBookedItemsOfUser(ownerId, stateParam, from, size);
+        return bookingClient.getBookedItemsOfUser(ownerId.get(), stateParam, from, size);
+    }
+
+    private void checkUserIdPresent(Optional<Long> userId) {
+        if (userId.isEmpty()) {
+            throw new UserValidationException();
+        }
     }
 }
